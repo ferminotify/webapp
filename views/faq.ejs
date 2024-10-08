@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fermi Notify è un servizio non ufficiale dell'IS &quot;E. Fermi&quot; Mantova che invia delle notifiche per avvisare delle variazioni dell'orario del calendario giornaliero.">
+    <meta propety="og:image" content="https://ferminotify.me/img/og-logo.png">
+    <meta property="og:description" content="Fermi Notify è un servizio non ufficiale dell'IS &quot;E. Fermi&quot; Mantova che invia delle notifiche per avvisare delle variazioni dell'orario del calendario giornaliero.">
+    <meta property="og:title" content="Fermi Notify">
+    <meta property="og:type" content="website">
+    <script src="/js/hamburger.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/img/favicon-black.png">
+    <!-- css -->
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="stylesheet" href="/css/alertbanner.css" type="text/css">
+    <link rel="stylesheet" href="/css/page.css" type="text/css">
+    <link rel="stylesheet" href="/css/slick-slider.css" type="text/css">
+    <link rel="stylesheet" href="/css/faq.css" type="text/css">
+    <link rel="stylesheet" href="/css/buymeacoffee.css" type="text/css">
+    <link rel="preload" href="/css/dark.css" as="style">
+	<link rel="preload" href="/css/light.css" as="style">
+    <link rel="stylesheet" href="/css/dark.css" type="text/css" id="themeCSS">
+    <script src="/js/changeTheme.js"></script>
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/95ae55bd9a.js" crossorigin="anonymous"></script>
+    <!-- Material Icon -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- jQuery 3.6.0 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+    <title>FAQ · Fermi Notify</title>
+
+    <style>
+        .main{
+            position: relative;
+        }
+        #ComeFunzionaContainer{
+            height: 400px;
+        }
+        #ComeFunziona{
+            position: absolute;
+            right: 0;
+            overflow-x: hidden;
+            left: 50%;
+            transform: translate(-50%, 0)
+        }
+        @media screen and (max-width: 760px) {
+            .grid-center-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+    <%- include('includes/navbar.ejs', { isLogged: isLogged, active: 'faq' }); %>
+
+    <div class="section">
+        <div class="rounded-container">
+            <div class="rounded-inner">
+                <h1 class="firstTitle" style="color: #e3e3e3;">FAQ</h1>
+                <p class="firstSubtitle" style="color: #e3e3e3;">Scopri come funziona Fermi Notify.</p>
+            </div>
+        </div>
+
+        <div class="rounded-container">
+            <div class="rounded-inner">
+                <div class="container-title">
+                    <div class="container-mid">
+                        <div class="container-subtitle">
+                            <p class="main-subtitle1 mono">
+                                &gt; inserisci il tag <br>
+                            </p>
+                        </div>
+                        <div class="container-subtitle">
+                            <p class="main-subtitle2 mono">
+                                &gt; ricevi la notifica <br>
+                            </p>
+                        </div>
+                        <div class="container-subtitle">
+                            <p class="main-subtitle3 mono">
+                                &gt; rimani aggiornato <br>
+                            </p>
+                        </div>
+                        <div class="container-subtitle">
+                            <p class="main-subtitle4 mono">
+                                &gt <span class="primary-text mono">sempre</span>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-container" style="margin: 25px 0;" id="domini">
+            <div class="rounded-inner">
+                <h2 style="margin: 0;">Domini attivi (mirror)</h2>
+                <div class="grid-center-2col" style="padding-top: 0.83em; line-height: 2; place-items: start;">
+                    <div class="domain">
+                        <div class="dot verifying" id="ferminotify-me" title="Verifica in corso"></div>
+                        <span class="material-space-right">ferminotify.me</span>
+                        <a href="//ferminotify.me" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                    <div class="domain">
+                        <div class="dot verifying" id="fn-lkev-in" title="Verifica in corso"></div>
+                        <span class="material-space-right">fn.lkev.in</span>
+                        <a href="//fn.lkev.in" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                    <div class="domain">
+                        <div class="dot verifying" id="ferminotify-lkev-in" title="Verifica in corso"></div>
+                        <span class="material-space-right">ferminotify.lkev.in</span>
+                        <a href="//ferminotify.lkev.in" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                    <div class="domain">
+                        <div class="dot verifying" id="ferminotify-sirico-dev" title="Verifica in corso"></div>
+                        <span class="material-space-right">ferminotify.sirico.dev</span>
+                        <a href="//ferminotify.sirico.dev" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                </div>
+                <div class="grid-center-2col" style="padding-top: 0.83em; line-height: 2; place-items: start;">
+                    <div class="domain">
+                        <div class="dot verifying" id="old-ferminotify-me" title="Verifica in corso"></div>
+                        <span class="material-space-right">old.ferminotify.me</span>
+                        <a href="//old.ferminotify.me" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                    <div class="domain">
+                        <div class="dot verifying" id="old-fn-lkev-in" title="Verifica in corso"></div>
+                        <span class="material-space-right">old.fn.lkev.in</span>
+                        <a href="//old.fn.lkev.in" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                </div>
+                <div class="grid-center-2col" style="padding-top: 0.83em; line-height: 2; place-items: start;">
+                    <div class="domain">
+                        <div class="dot verifying" id="api-ferminotify-me" title="Verifica in corso"></div>
+                        <span class="material-space-right">api.ferminotify.me</span>
+                        <a href="//api.ferminotify.me" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                    <div class="domain">
+                        <div class="dot verifying" id="api-fn-lkev-in" title="Verifica in corso"></div>
+                        <span class="material-space-right">api.fn.lkev.in</span>
+                        <a href="//api.fn.lkev.in" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tooltip" class="invisible"></div>
+        <script>
+            // 100% mon codé (https://codepen.io/JulienBorgeon/pen/WNqevgg) (vive la revolution!)
+
+            // Récupère l'élément tooltip à partir de son ID
+            const tooltip = document.getElementById('tooltip');
+
+            // Vérifie si l'élément tooltip existe
+            if (tooltip) {
+            // Variables pour suivre les coordonnées de la souris et du tooltip
+            let mouseX = 0;
+            let mouseY = 0;
+            let tooltipX = 0;
+            let tooltipY = 0;
+
+            // Fonction pour mettre à jour la position du tooltip avec un décalage fluide
+            function updateTooltipPosition() {
+                // Interpolation pour mouvement fluide
+                tooltipX += (mouseX - tooltipX) * 0.17;
+                tooltipY += (mouseY - tooltipY) * 0.17;
+
+                // Met à jour les styles de position du tooltip
+                tooltip.style.top = tooltipY + 'px';
+                tooltip.style.left = tooltipX + 'px';
+
+                // Demande au navigateur d'appeler cette fonction avant le prochain repaint
+                requestAnimationFrame(updateTooltipPosition);
+            }
+
+            // Lance la mise à jour continue de la position du tooltip
+            requestAnimationFrame(updateTooltipPosition);
+
+            // Événement pour gérer le survol de la souris sur un élément avec un attribut title
+            document.addEventListener('mouseover', function(e) {
+                if (e.target.hasAttribute('title')) {
+                // Récupère la valeur de l'attribut title
+                const title = e.target.getAttribute('title');
+                // Stocke la valeur de title dans un nouvel attribut data-original-title
+                e.target.setAttribute('data-original-title', title);
+                // Supprime l'attribut title pour éviter l'info-bulle par défaut du navigateur
+                e.target.removeAttribute('title');
+                }
+            });
+
+            // Événement pour gérer le déplacement de la souris sur la page
+            document.addEventListener('mousemove', function(e) {
+                // Met à jour les coordonnées de la souris avec un léger décalage
+                //mouseX = e.clientX + 12; // Ajuster la valeur ici pour la distance horizontale
+                mouseY = e.clientY + window.scrollY - 30; // Ajuster la valeur ici pour la distance verticale
+                mouseX = e.clientX - 85; // boh je m'appelle Kevin
+
+                // Vérifie si l'élément sous la souris possède un attribut data-original-title
+                if (e.target.hasAttribute('data-original-title')) {
+                // Récupère la valeur de l'attribut data-original-title
+                const title = e.target.getAttribute('data-original-title');
+                // Affiche le contenu de data-original-title dans le tooltip
+                tooltip.innerHTML = title;
+                // Rend le tooltip visible
+                tooltip.classList.remove('invisible');
+                } else {
+                // Cache le tooltip si l'élément sous la souris n'a pas data-original-title
+                tooltip.classList.add('invisible');
+                }
+            });
+
+            // Événement pour gérer la sortie de la souris d'un élément
+            document.addEventListener('mouseout', function(e) {
+                if (e.target.hasAttribute('data-original-title')) {
+                // Récupère la valeur de data-original-title
+                const title = e.target.getAttribute('data-original-title');
+                // Restaure l'attribut title avec la valeur originale
+                e.target.setAttribute('title', title);
+                // Supprime l'attribut data-original-title
+                e.target.removeAttribute('data-original-title');
+                }
+                // Cache le tooltip lorsque la souris quitte l'élément
+                tooltip.classList.add('invisible');
+            });
+            } else {
+            console.error('Aucun élément Tooltip ciblé.');
+            }
+        </script>
+
+        
+        <!--script>
+            document.addEventListener('DOMContentLoaded', () => {
+                var urlList = [];
+
+                document.querySelectorAll('.domain').forEach(domain => {
+                    var url = domain.querySelector('span').innerText;
+                    urlList.push(url);
+                });
+
+                urlList.forEach(url => {
+                    fetch('https://url-status.lkev.in?url=' + url)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(url + " " + data.status);
+                            if(data.status == '200'){
+                                document.getElementById(url.replace(/\./g, '-')).classList.remove('verifying');
+                                document.getElementById(url.replace(/\./g, '-')).classList.add('active');
+                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Online');
+                            } else {
+                                document.getElementById(url.replace(/\./g, '-')).classList.remove('verifying');
+                                document.getElementById(url.replace(/\./g, '-')).classList.add('inactive');
+                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Offline');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            document.getElementById(url.replace(/\./g, '-')).classList.remove('verifying');
+                            document.getElementById(url.replace(/\./g, '-')).classList.add('na');
+                            document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Errore sconosciuto');
+                        });
+                });
+            });
+        </script-->
+        <script>
+            // new logic with get /status endpoint
+            document.addEventListener('DOMContentLoaded', () => {
+                var urlList = [];
+
+                document.querySelectorAll('.domain').forEach(domain => {
+                    var url = domain.querySelector('span').innerText;
+                    urlList.push(url);
+                });
+
+                // send get request to /status endpoint
+                urlList.forEach(url => {
+                    fetch(`https://${url}/status`)
+                        .then(response => {
+                            if (response.ok) {
+                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
+                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('active');
+                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Online');
+                            } else {
+                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
+                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('inactive');
+                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Offline');
+                            }
+                        })
+                        .catch(error => {
+                            // if req blocked by CORS, set as inactive
+                            if (error.name === 'TypeError') {
+                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
+                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('inactive');
+                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Offline');
+                                return;
+                            }
+                            document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
+                            document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('na');
+                            document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Errore sconosciuto');
+                        });
+                });
+                    
+            });
+        </script>
+
+        <!--script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script-->
+        <script type="text/javascript" src="/js/slick.min.js"></script>
+        <div id="ComeFunzionaContainer"><div class="slider-container slideshow-box-hp" id="ComeFunziona">
+        <div class="slideshow-cards">
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-cogs"></i></p>
+                    <div class="slider-card-text">
+                        <h1>Come funziona<span class="slider-primary">?</span></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-tags"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Inserisci la keyword</h2>
+                        <p>Inserisci le parole chiavi che ti riguardano</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-calendar-plus"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Nuovo evento</h2>
+                        <p>Cerchiamo automaticamente sul calendario giornaliero</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-exclamation-circle"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Ti avvisiamo</h2>
+                        <p>Se ci sono eventi o variazioni che ti interessano</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-bell"></i></p>
+                    <div class="slider-card-text">
+                        <h2 class="sliderTitolo">Tipi di notifiche</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fa-solid fa-paper-plane"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Daily Notification</h2>
+                        <p>Notifica delle 6:00 che racchiude gli eventi e le variazioni in programma</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fa-solid fa-hourglass-start"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Last Minute Notification</h2>
+                        <p>Notifica istantanea per eventi o modifiche aggiunti durante la giornata</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-compass"></i></p>
+                    <div class="slider-card-text">
+                        <h2 class="sliderTitolo">Esplora le funzionalit&agrave;</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-search"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Cerca Eventi</h2>
+                        <p>Cerca gli eventi e le variazioni dell'orario previsti per i prossimi 3 giorni</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-sliders-h"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Personalizza i canali</h2>
+                        <p>Scegli quale canale di comunicazione preferisci</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fa-brands fa-telegram"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Telegram</h2>
+                        <p>Ti avvisiamo tramite il nostro bot su Telegram</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fas fa-envelope"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Email</h2>
+                        <p>Ti avvisiamo con una semplice ed efficace email</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card">
+                    <p class="slider-card-icon"><i class="fa-solid fa-circle-question"></i></p>
+                    <div class="slider-card-text">
+                        <h2>Dubbi<span class="slider-primary">?</span></h2>
+                        <p>Visita la FAQ o contattaci</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="content-card" style="grid-template-columns: 1fr;">
+                    <svg version="1.1" viewBox="0 0 90 94" xmlns="http://www.w3.org/2000/svg" style="max-width: 60%; max-height: 60%; transform: translateX(3px) translateY(-3px);" class="logo">
+                        <circle cx="78.77" cy="10.95" r="9.6" fill="#f00" class="logo-dot"/>
+                        <path d="m69.13 6.05q-1.12 2.84-1.22 4.98-23.81-0.06-47.69-0.02-5.01 0.01-7.39 0.95c-5.43 2.15-7.88 7.02-7.87 12.82q0.05 26.12 0.02 52.89c-0.01 4.61 2.96 9.12 7.14 11.07q3.04 1.41 8.03 1.34 22.75-0.29 45.07 0.03c5.33 0.07 10.08-2.31 12.57-7.22q1.22-2.4 1.22-9.96-0.02-25.46-0.01-50.89 2.85-0.18 4.99-1.26 0.03 26.51-0.01 53.1-0.01 7.2-1.44 10.54-2.77 6.48-9.95 9.58h-61.18q-9.66-4.17-11.41-14.59v-57.96q2.05-10.48 10.83-14.07 3.38-1.38 10.02-1.38 24-0.03 48.28 0.05z"/>
+                        <path d="m35.99 36.36 0.03 7.02a0.36 0.36 0 0 0 0.36 0.36h27.26a0.36 0.36 0 0 1 0.36 0.36l-0.01 10.28a0.36 0.36 0 0 1-0.36 0.36h-27.27a0.36 0.36 0 0 0-0.36 0.36v18.55a0.36 0.36 0 0 1-0.36 0.36l-14.76-0.02a0.36 0.36 0 0 1-0.36-0.36v-47.75a0.36 0.36 0 0 1 0.36-0.36h42.75a0.36 0.36 0 0 1 0.36 0.36l0.02 9.76a0.36 0.36 0 0 1-0.36 0.36h-27.3a0.36 0.36 0 0 0-0.36 0.36z"/>
+                    </svg>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $('.slideshow-cards').slick({
+                    dots: false,
+                    infinite: false,
+                    speed: 500,
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    easing: 'easeOut',
+                    centerMode: true,
+                    responsive: [
+                        {
+                            breakpoint: 1200,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1,
+                                dots: false,
+                                centerMode: false
+                            }
+                        },
+                        {
+                            breakpoint: 900,
+                            settings: {
+                                slidesToShow: 1,
+                                slidesToScroll: 1,
+                                dots: false,
+                                centerMode: false
+                            }
+                        }
+                    ]
+                });
+
+                /*$( ".slideshow-cards" ).mousedown(function() {
+                    $(this).addClass('mousedown');
+                });
+                $( ".slideshow-cards" ).mouseup(function() {
+                    $(this).removeClass('mousedown');
+                });*/
+                $(document).ready(() => {
+                    $('.slideshow-cards .slick-list .slick-track').mousedown(function () {
+                        $('.slideshow-cards').addClass('mousedown');
+                    });
+                    $('body').mouseup(function () {
+                        $('.slideshow-cards').removeClass('mousedown');
+                    });
+                });
+            });
+        </script>
+    </div></div>
+        
+        <div class="btn-container faqIndex">
+            <a onclick="showElem(this)" id="generali" class="btn tab active indexElem generali">
+                Generali
+            </a>
+            <a onclick="showElem(this)" id="configurazione" class="btn tab indexElem configurazione">
+                Configurazione
+            </a>
+            <a onclick="showElem(this)" id="privacy" class="btn tab indexElem privacy">
+                Informativa privacy
+            </a>
+        </div>
+
+        <div class="btn-container faqIndexMobile">
+            <a onclick="showElem(this)" id="generali" class="btn tab active indexElem generali">
+                Generali
+            </a>
+            <a onclick="showElem(this)" id="configurazione" class="btn tab indexElem configurazione">
+                Config
+            </a>
+            <a onclick="showElem(this)" id="privacy" class="btn tab indexElem privacy">
+                Privacy
+            </a>
+        </div>
+
+        <div id="generaliContainer" class="indexElemContainer indexElemShow">
+            <div class="question">
+                <h3>1. Cos'&egrave; Fermi Notify?</h3>
+                <p class="answer">
+                    Fermi Notify &egrave; un servizio che ti permette di ricevere notifiche via email o via Telegram quando viene aggiunto un evento o una variazione dell'orario sul <a href="https://www.fermimn.edu.it/variazioni-orario/" class="link">calendario giornaliero</a>, come una sostituzione o un cambio aula.
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>2. Come faccio a registrarmi?</h3>
+                <p class="answer">Per registrarti clicca <a href="https://www.ferminotify.me/register" class="link">qui</a>. L'email utilizzata nella registrazione sarà quella che riceverà le notifiche.</p>
+            </div>
+
+            <div class="question">
+                <h3>3. Come viene protetta la password?</h3>
+                <p class="answer">La password viene criptata attraverso un processo di hashing ricorsivi a un numero adeguato di round.</p>
+            </div>
+
+            <div class="question">
+                <h3>4. Quando arrivano le notifiche?</h3>
+                <p class="answer">
+                    Nel caso in cui l'evento che ti riguarda venga pubblicato in qualsiasi momento prima del giorno stesso, ti arriver&agrave; una notifica che racchiude tutti gli eventi in programma alle <span class="primary-text">6:00</span> del giorno stesso.
+                </p>
+                <p class="answer answer-staccato">
+                    Nel caso in cui l'evento che ti riguarda venga pubblicato dopo le 6:00 (come una sostituzione dell'ultimo minuto), riceverai la notifica <span class="primary-text">all'istante</span>.
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>5. Fermi Notify e l'Istituto Superiore "Enrico Fermi" Mantova.</h3>
+                <p class="answer">
+                    Fermi Notify non &egrave; un servizio ufficiale dell'Istituto Superiore "Enrico Fermi" di Mantova. Il sistema non è riconosciuto dalla presidenza. Eventuali malfunzionamenti sono a carico dello staff e non sono valide giustificazioni in uffici di segreteria e presidenza
+                </p>
+            </div>
+            
+        </div>
+
+        <div id="configurazioneContainer" class="indexElemContainer">
+            <div class="question">
+                <h3>1. Cosa sono le keywords?</h3>
+                <p class="answer">
+                    Le <span class="primary-text">keywords</span> sono le parole chiave che inserisci nella tua lista per ricevere la notifica se &egrave; presente un evento che la riguarda nel calendario giornaliero.
+                </p>
+                <p class="answer answer-staccato">
+                    Esempio: se aggiungi <code>4CIIN</code> come keyword, riceverai una notifica se nel calendario giornaliero &egrave; presente un evento che contiene la parola <i>4CIIN</i>. Fai attenzione alla <span class="primary-text">formattazione</span> della keyword, dev'essere uguale a quella scritta nel calendario giornaliero (<code>4CIIN</code>, non "4 CIIN" o "4CIN")!
+                </p>
+                <p class="answer answer-staccato">
+                    Consiglio: aggiungi la tua <span class="primary-text">classe</span> per ricevere le notifiche riguardanti la classe (come una sostituzione o un cambio aula), puoi aggiungere anche:<br>
+                    <ul style="line-height: 1.5em; ">
+                        <li>il tuo <span class="primary-text">cognome</span> per le notifiche riguardanti solo te (come la prenotazione di un aula);</li>
+                        <li>il nome di un <span class="primary-text">corso</span> che segui per le notifiche riguardanti le attivit&agrave; extrascolastiche (es. <i>Corso FUSION</i>).</li>
+                    </ul>
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>2. Come aggiungo le keywords?</h3>
+                <p class="answer">
+                    Puoi aggiungere le keywords nella casella dedicata nella <a href="https://www.ferminotify.me/dashboard">Dashboard</a>. Una volta aggiunte, appariranno nella lista. Le keywords <span class="primary-text">non</span> sono case sensitive, quindi puoi aggiungerle in maiuscolo o minuscolo (4CIIN o 4Ciin o 4ciin non cambia).
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>3. Come rimuovo le keywords?</h3>
+                <p class="answer">
+                    Per rimuovere una keyword, <span class="primary-text">riscrivila</span> nella casella che hai utilizzato per aggiungerla nella <a href="https://www.ferminotify.me/dashboard" class="link">Dashboard</a>. Quindi la keyword verr&agrave; rimossa dalla lista.
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>4. Come funziona la notifica tramite Telegram?</h3>
+                <p class="answer">
+                    Per essere notificato su Telegram, invia il <span class="primary-text">codice</span> presente nella <a href="https://www.ferminotify.me/dashboard#Telegram" class="link">Dashboard</a> al bot <a href="https://t.me/FermiNotifierBot" class="link">@FermiNotifierBot</a>.
+                </p>
+            </div>
+        </div>
+
+        <div id="privacyContainer" class="indexElemContainer">
+			<div class="question">
+                <h3>Informativa privacy</h3>
+                <p class="answer">
+                    La presente informativa descrive le modalità di gestione dei dati personali degli utenti che interagiscono con Fermi Notify. Ai sensi delle normative italiane ed europee in materia di protezione dei dati personali, la presente informativa è resa in ottemperanza al Regolamento (UE) 2016/679 del Parlamento Europeo e del Consiglio del 27 aprile 2016 (GDPR).
+                </p>
+            </div>
+            <div class="question">
+                <h3>1. Raccolta dei dati</h3>
+                <p class="answer">
+                    Fermi Notify richiede la raccolta di dati personali specifici esclusivamente nel contesto della registrazione al servizio per usufruire delle funzionalità avanzate, come le notifiche. I dati necessari per la registrazione includono nome e cognome, indirizzo email e genere. Facoltativamente, l'utente può fornire il proprio Telegram ID. La raccolta di tali informazioni è vincolata alla volontà dell'utente di usufruire dei servizi di registrazione e notifica. La fruizione di altre funzionalità del servizio, che non implicano la registrazione, è consentita senza la necessità di fornire tali dati personali.
+                </p>
+            </div>
+            <div class="question">
+                <h3>2. Trattamento dei dati</h3>
+                <p class="answer">
+                    I dati forniti sono accessibili esclusivamente al team interno di Fermi Notify, composto da persone fisiche presenti a <a href="/credits" class="link">questa pagina</a>. Collaboratori esterni e strumenti citati come "Extra" non hanno accesso ai dati sensibili degli utenti. L'impiego dell'intelligenza artificiale (OpenAI Chat GPT, Google Bard e GitHub Copilot) è limitato al supporto tecnico e allo sviluppo.
+                </p>
+            </div>
+            <div class="question">
+                <h3>3. Conservazione e utilizzo dei dati</h3>
+                <p class="answer">
+                    Fermi Notify utilizza tecnologie come i session cookie e localStorage per migliorare l'esperienza di navigazione. I session cookie sono essenziali per il funzionamento del sito e vengono eliminati automaticamente alla chiusura della sessione. Le informazioni memorizzate in localStorage riguardano esclusivamente le preferenze dell'utente e conserva informazioni riguardanti le keywords/parole chiave nella sezione "Cerca eventi" nella homepage e vengono salvati in modo locale sul dispositivo utilizzato per la navigazione.
+                </p>
+            </div>
+            <div class="question">
+                <h3>4. Protezione dei dati</h3>
+                <p class="answer">
+                    Le informazioni personali fornite dagli utenti sono custodite in modo sicuro e non vengono condivise con terzi.<br>
+                    La password fornita per l'accesso per gli utenti registrati è soggetta a un processo di hash mediante un numero adeguato di round. Tale procedura è finalizzata a migliorare la sicurezza dei dati dell'utente. L'hashing rappresenta una pratica crittografica che converte la password in una stringa di lunghezza fissa, rendendo più complesso il tentativo di decifrarla o individuare la password originale.<br>
+                    Attualmente, i dati degli utenti sono conservati in un server ubicato a Francoforte, appartenente a Render Services, Inc., un fornitore affidabile di servizi di hosting. L'adozione di misure di sicurezza avanzate, tra cui crittografia dei dati e protocolli di sicurezza, garantisce la massima tutela delle informazioni personali degli utenti. Questa scelta è volta a garantire una protezione robusta e conforme alle normative vigenti.
+                </p>
+            </div>
+            <div class="question">
+                <h3>5. Possibilità di modifica, disabilitazione e cancellazione dell'account</h3>
+                <p class="answer">
+                    Gli utenti hanno la facoltà di cancellare i dati salvati in localStorage e disabilitare il salvataggio per il sito tramite le impostazioni del browser. Tuttavia, tale azione potrebbe limitare alcune funzionalità del servizio. Gli utenti registrati possono eliminare l'account inviando una richiesta via email a <a href="mailto:ferminotify@gmail.com" class="link">ferminotify@gmail.com</a>. Fermi Notify gestirà le richieste di cancellazione dell'account nel rispetto delle normative sulla protezione dei dati personali, assicurando la sicurezza e la privacy delle informazioni degli utenti.
+                </p>
+            </div>
+            <div class="question">
+                <h3>6. Gestione dei dati in conformità alle normative sulla privacy</h3>
+                <p class="answer">
+                    La gestione dei dati di Fermi Notify è svolta con attenzione alle normative sulla privacy vigenti. Sebbene l'utilizzo di localStorage non coinvolga la memorizzazione di dati personali o sensibili, il nostro impegno è garantire il rispetto delle norme sulla protezione dei dati. Fermi Notify si adopera per condurre tutte le operazioni in conformità alle leggi italiane ed europee sulla privacy, assicurando che la gestione delle informazioni rispetti gli standard richiesti.
+                </p>
+            </div>
+            <div class="question">
+                <h3 class="flex-y-center">7. Open Source&nbsp;<a class="flex-y-center" href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://creativecommons.org/images/deed/cc_icon_white_x2.png" style="height: 1em;"> <img src="https://creativecommons.org/images/deed/attribution_icon_white_x2.png" style="height: 1em;"> <img src="https://creativecommons.org/images/deed/sa_white_x2.png" style="height: 1em;"></a></h3>
+                <p class="answer">
+                    Si specifica che il progetto è un'iniziativa open source, conforme alla licenza Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0), rendendo il codice sorgente accessibile al pubblico a <a href="https://github.com/search?q=topic%3Aferminotify+org%3Aferminotify&type=Repositories" class="link">questo link</a>. La licenza adottata consente agli utenti di condividere, adattare e utilizzare liberamente il software, a condizione che venga fornito l'attributo appropriato e che eventuali opere derivate siano soggette alla stessa licenza. Questo approccio riflette l'impegno per la condivisione della conoscenza e la collaborazione aperta, invitando gli sviluppatori a contribuire al progetto nel rispetto delle condizioni di licenza stabilite. Gli utenti sono incoraggiati a esplorare i repository, ad apportare miglioramenti e a condividere le proprie modifiche con la community, contribuendo così alla crescita e all'evoluzione dell'applicazione in conformità con i principi della licenza CC BY-SA 4.0.
+                </p>
+            </div>
+        </div>
+
+        <div class="flex-col-center" style="margin: 25px 0;">
+            <p style="margin: 10px 0;">Per supporto o informazioni, contatta:</p>
+            <div class="flex-center" style="gap: 10px">
+                <a class="btn outlined flex-center" href="https://www.instagram.com/ferminotify/"><i class="fa-brands fa-instagram material-space-right"></i> ferminotify</a>
+                <!--a class="btn outlined flex-center" href="mailto:ferminotify@gmail.com"><span class="material-symbols-outlined material-space-right">mail</span> ferminotify@gmail.com</a>
+                <a class="btn text flex-center" onclick="copy(this, 'ferminotify@gmail.com')"><span class="material-symbols-outlined">content_copy</span></a-->
+            </div>
+            <a href="/credits" class="btn filled flex-center" style="margin-top: 10px;">Team</a>
+        </div>
+
+        <script>
+            function copy(elem, text){
+                navigator.clipboard.writeText(text);
+                elem.innerHTML = "<span class='material-symbols-outlined'>check</span>";
+                setTimeout(function(){
+                    elem.innerHTML = "<span class='material-symbols-outlined'>content_copy</span>";
+                }, 3000);
+            }
+        </script>
+
+        <script src="/js/btn-container-sticky.js" defer></script>
+
+    </div>
+
+    <!-- FEEDBACK & RECRUITING -->
+	<style>
+		#feedback-recruiting{
+			margin: 17px 0 25px 0;
+		}
+		#feedback-recruiting .card-1 i{
+			font-size: 1.5rem; transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+		}
+		#feedback-recruiting .flex-col-center{
+			width: 100%; color: var(--on-surface); text-decoration: none; box-sizing: border-box;
+		}
+		#feedback-recruiting div > a.card-1:first-of-type:hover {
+			border-color: var(--surface-variant);
+			color: var(--on-surface-variant);
+		}
+		#feedback-recruiting div > a.card-1:first-of-type:before {
+			background-color: var(--surface-variant);
+			top: 100% !important;
+			left: -25px !important;
+		}
+		#feedback-recruiting div > a.card-1:last-of-type:hover {
+			border-color: var(--primary);
+			color: var(--on-primary);
+		}
+		#feedback-recruiting div > a.card-1:last-of-type:before {
+			background-color: var(--primary);
+			top: 100% !important;
+			left: -25px !important;
+		}
+		#feedback-recruiting .grid-center-2col{
+			width: 100%; gap: 15px;
+			grid-template-columns: 1fr 1fr;
+			max-width: 600px; /* 300px + 300px */
+		}
+		@media screen and (max-width: 600px) {
+			#feedback-recruiting .grid-center-2col{
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+			#feedback-recruiting .card-1{
+				flex-direction: row;
+				justify-content: space-evenly;
+				gap: 5px;
+				padding: 15px;
+			}
+			#feedback-recruiting h4{
+				font-size: 14px;
+			}
+			#feedback-recruiting .card-1 i{
+				margin: 0px;
+			}
+		}
+	</style>
+	<h2 style="text-align: center; margin: 10px 0;"><span class="primary-text">Contribuisci</span> a Fermi Notify</h2>
+	<!-- BUY ME A COFFEE -->
+	<div class="coffee-container">
+		<a class="coffee-button" href="https://www.buymeacoffee.com/ferminotify">
+		<h1 class="coffee-arrow">&gt;</h1>
+		<div class="coffee-link">
+			<h1 class="coffee-icon"><i class="fa-solid fa-mug-hot"></i></h1>
+			<div class="coffee-text">
+				<h2 class="coffee-text-big">OFFRICI UN CAFF&Egrave;</h2>
+				<span class="coffee-text-small">e supporta il progetto</span>
+			</div>
+		</div>
+		<h1 class="coffee-arrow">&lt;</h1>
+		</a>
+	</div>
+	<div id="feedback-recruiting">
+		<div class="grid-center-2col">
+			<a class="card-1" href="./feedback">
+				<i class="fas fa-comment"></i>
+				<h4 style="margin: 0;">Feedback & suggerimenti</h4>
+			</a>
+			<a class="card-1" href="./recruiting">
+				<i class="fas fa-users"></i>
+				<h4 style="margin: 0;">Candidati per il team</h4>
+			</a>
+		</div>
+	</div>
+
+    </div>
+
+
+    <script>
+        // onclick indexElem add active and remove to the others
+        const indexElem = document.querySelectorAll(".indexElem");
+        indexElem.forEach(elem => {
+            elem.addEventListener("click", () => {
+                indexElem.forEach(elem => {
+                    elem.classList.remove("active");
+                });
+                elem.classList.add("active");
+            });
+        });
+    </script>
+
+    <script>
+        function showElem(elem) {
+            const id = elem.id;
+            showPage(id);
+        }
+
+        function showPage(id){
+            const container = document.getElementById(id + "Container");
+            const indexElemContainer = document.querySelectorAll(".indexElemContainer");
+            indexElemContainer.forEach(elem => {
+                elem.classList.remove("indexElemShow");
+            });
+            container.classList.add("indexElemShow");
+            const scroll = container.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({
+                top: scroll,
+                behavior: 'smooth'
+            });
+        }
+
+        var URLParams = new URLSearchParams(window.location.search);
+        var page = URLParams.get("page");
+        if(page == "privacy" || page == "configurazione" || page == "generali"){
+            document.querySelectorAll(".indexElem").forEach(elem => {
+                elem.classList.remove("active");
+            });
+            $("." + page).addClass("active");
+            $(document).ready(function() {
+                showPage(page);
+            });
+        }
+        var section = URLParams.get("s");
+        if(section){
+            // scroll to section
+            var elem = document.getElementById(section);
+            if(elem){
+                var scroll = elem.getBoundingClientRect().top + window.scrollY - 50;
+                window.scrollTo({
+                    top: scroll,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        history.replaceState({}, document.title, "/" + "faq");
+    </script>
+
+    <%- include('includes/footer.ejs'); %>
+
+    <%- include('includes/alertbanner.ejs') %>
+
+</body>
+</html>

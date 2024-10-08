@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>404 - Pagina non trovata</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta propety="og:image" content="https://ferminotify.me/img/og-logo.png">
+  <meta property="og:description" content="Fermi Notify è un servizio non ufficiale dell'IS &quot;E. Fermi&quot; Mantova che invia delle notifiche per avvisare delle variazioni dell'orario del calendario giornaliero.">
+  <meta property="og:title" content="404 Pagina non trovata · Fermi Notify">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/x-icon" href="/img/favicon-black.png">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/alertbanner.css" type="text/css">
+  <link rel="preload" href="/css/dark.css" as="style">
+	<link rel="preload" href="/css/light.css" as="style">
+  <link rel="stylesheet" href="/css/dark.css" type="text/css" id="themeCSS">
+  <script src="/js/changeTheme.js"></script>
+  <!-- Material Icon -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3511194049429500" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <%- include('includes/navbar.ejs', { isLogged: isLogged }); %>
+
+  <div class="flex-col-center" style="height: 100vh;">
+        <h1 class="primary-text">4😮4</h1>
+        <h2>Oops! Pagina non trovata</h2>
+        <p>La pagina che stai cercando non esiste.</p>
+
+        <a href="/"><img src="/img/favicon-white.png" alt="404" style="width: 100%; height: auto; max-width: 25px; bottom: min(100px, 15vh); position: absolute;"></a>
+  </div>
+
+  <%- include('includes/footer.ejs'); %>
+</body>
+</html>

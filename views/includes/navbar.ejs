@@ -1,0 +1,121 @@
+    <div class="sidebar">
+        <div class="sidebar-inner">
+            <a class="sidebar-link" id="cercaeventi" href="/">
+                <span class="material-symbols-outlined">
+                    search
+                </span>
+                <span class="sidebar-link-text">Filtra Eventi</span>
+            </a>
+            <% if(isLogged) { %>
+                <a class="sidebar-link" id="dashboard" href="/dashboard">
+                    <span class="material-symbols-outlined">
+                        space_dashboard
+                    </span>
+                    <span class="sidebar-link-text">Dashboard</span>
+                </a>
+            <% } else { %>
+                <a class="sidebar-link" id="login" href="/login">
+                    <span class="material-symbols-outlined">
+                        login
+                    </span>
+                    <span class="sidebar-link-text">Accesso</span>
+                </a>
+            <% } %>
+            <!--a class="sidebar-link" id="orario">
+                <span class="material-symbols-outlined">
+                    schedule
+                </span>
+                Orario
+            </a-->
+            <a class="sidebar-link" href="//old.fn.lkev.in">
+                <span class="material-symbols-outlined">
+                    link
+                </span>
+                <span class="sidebar-link-text">Vecchio sito</span>
+            </a>
+            <a class="sidebar-link sidebar-desktop" id="faq" href="/faq">
+                <span class="material-symbols-outlined">
+                    help_center
+                </span>
+                FAQ
+            </a>
+            
+            <div class="sidebar-link sidebar-menu" id="manu">
+                <a class="hamburger">
+                    <span class="line"></span>
+                    <span class="line"></span>
+                    <span class="line"></span>
+                </a>
+                <div class="nav-links">
+                    <ul>
+                        <li>
+                            <a class="sidebar-menu-link sidebar-menu-faq flex-center" href="/faq">
+                                <span class="material-symbols-outlined material-space-right">help_center</span> FAQ
+                            </a>
+                        </li>
+                        <li>
+                            <a onclick="changeTheme()" class="sidebar-menu-link sidebar-menu-theme flex-center"><span class="material-symbols-outlined sidebar-theme-btn">
+                                light_mode
+                            </span></a>
+                        </li>
+                        <li>
+                            <div class="sidebar-link sidebar-contatti">
+                                <a href="https://www.instagram.com/ferminotify/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="https://github.com/ferminotify" target="_blank"><i class="fa-brands fa-github"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <span class="sidebar-link-text">Menu</span>
+            </div>
+        </div>
+        <div class="sidebar-theme-container sidebar-desktop">
+            <a onclick="changeTheme()" class="sidebar-theme"><span class="material-symbols-outlined sidebar-theme-btn">
+                light_mode
+            </span></a>
+            <div class="sidebar-link sidebar-contatti sidebar-desktop">
+                <a href="https://www.instagram.com/ferminotify/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://github.com/ferminotify" target="_blank"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <% if (typeof active !== 'undefined') { %>
+    <script>
+        // set active
+        var active = document.getElementById('<%= active %>');
+        active.classList.add('active');
+    </script>
+    <% } %>
+
+    <script>
+        // on scroll down hide / up show sidebar-link-text on mobile
+        function nav(){
+            if (window.innerWidth <= 600) {
+                var prevScrollpos = window.pageYOffset;
+                window.onscroll = function() {
+                    var currentScrollPos = window.pageYOffset;
+                    if (prevScrollpos > currentScrollPos || (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight-1 || currentScrollPos < 10) {
+                        $(".sidebar-link-text").slideDown(300);
+                        $(".sidebar").css("height", "78px");
+                    } else {
+                        $(".sidebar-link-text").slideUp(300);
+                        $(".sidebar").css("height", "58px");
+                    }
+                    prevScrollpos = currentScrollPos;
+                }
+            } else {
+                // default size
+                $(".sidebar").css("height", "100%");
+                $(".sidebar-link-text").show();
+                window.onscroll = null;
+            }
+        }
+        nav();
+        window.onresize = function() {
+            nav();
+        };
+    </script>
+
+    <div class="main-container">
+        <div class="main">

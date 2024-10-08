@@ -1,0 +1,67 @@
+.rounded-container{
+	background: linear-gradient(123deg, #461B93 0%, #461B93 40%, #6A3CBC calc(40% + 1px), #6A3CBC 60%, #8253D7 calc(60% + 1px), #8253D7 70%, #F78F1E calc(70% + 1px), #F78F1E 100%)
+}
+
+.credits-title{
+	text-align: center;
+	margin: 20px 0;
+	width: 100%;
+	color: var(--on-surface);
+	font-weight: 800;
+}
+
+.credits-subtitle{
+	text-align: center;
+	margin: 50px 0 20px 0;
+	width: 100%;
+	color: var(--on-surface);
+	font-weight: 800;
+}
+
+.credits-container{
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 25px;
+	color: var(--on-surface);
+}
+
+.grid-item{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.devInfo{
+	font-family: 'Source Code Pro', monospace;
+	text-align: center;
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	height: 100%;
+}
+
+.name{
+	margin: 15px 0;
+}
+
+.devRuolo{
+	margin-bottom: 15px;
+}
+
+.devRuolo p{
+	margin: 0;
+}
+
+@media only screen and (max-width: 1050px) {
+    .credits-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media only screen and (max-width: 650px) {
+    .credits-container {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+/* ---------------------- */

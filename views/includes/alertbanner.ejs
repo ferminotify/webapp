@@ -1,0 +1,104 @@
+<% if (typeof errors != 'undefined') { %> 
+	<div id="alertbanner" class="errorbanner">
+		<ul style="list-style: none; padding-left: 0; margin: 0">
+			<% errors.forEach(error => { %>
+				<li id="alertmessage"><i class="fa-solid fa-circle-exclamation"></i> <%= error.message %></li>
+			<% }) %> 
+		</ul>
+	</div>
+	<script>
+		document.getElementById("alertbanner").style.animation = "showAlert 0.5s ease-in-out forwards";
+		document.getElementById("alertbanner").addEventListener("click", function() {
+			document.getElementById("alertbanner").style.animation = "hideAlert 0.5s ease-in-out forwards";
+		});
+	</script>
+<% } %>
+
+<% if(messages.success_msg) { %>
+	<div id="alertbanner" class="successbanner">
+		<p id="alertmessage"><i class="fa-solid fa-check"></i> <%= messages.success_msg %></p>
+	</div>
+	<script>
+		document.getElementById("alertbanner").style.animation = "showAlert 0.5s ease-in-out forwards";
+		document.getElementById("alertbanner").addEventListener("click", function() {
+			document.getElementById("alertbanner").style.animation = "hideAlert 0.5s ease-in-out forwards";
+		});
+	</script>
+<% } %>
+
+<% if(messages.error_msg) { %>
+	<% messages.error_msg.forEach(error => { %>
+		<div id="alertbanner" class="errorbanner">
+			<p id="alertmessage"><i class="fa-solid fa-circle-exclamation"></i> <%= error %></p>
+		</div>
+		<script>
+			document.getElementById("alertbanner").style.animation = "showAlert 0.5s ease-in-out forwards";
+			document.getElementById("alertbanner").addEventListener("click", function() {
+				document.getElementById("alertbanner").style.animation = "hideAlert 0.5s ease-in-out forwards";
+			});
+		</script>
+	<% }) %>
+<% } %>
+
+<script>
+	if(localStorage.getItem("moveDomain") != "hide"){
+		var moveDomainHTML = `
+<style>
+	.bigalert{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.8);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 1000;
+	}
+	.bigalert-inner{
+		max-width: 760px;
+		width: 75%;
+		padding: 25px 35px;
+		border-radius: 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		background-color: var(--surface);
+		color: #fff;
+		line-height: 1.5;
+	}
+	.bigalert-inner p{
+		font-size: 16px;
+		text-align: justify;
+	}
+	.two-container{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+</style>
+<div class="bigalert" id="moveDomain">
+	<div class="bigalert-inner">
+		<div class="two-container" style="padding-bottom: 0.83em;">
+			<h2 style="margin: 0;">Aggiornamento su Fermi Notify</h2>
+			<button onclick="moveDomainClose()" class="btn text" style="font-size: 1.5em;">&times;</button>
+		</div>
+		<p style="padding-bottom: 10px;">Dall'anno scolastico 2024/2025, sono state fatte delle modifiche a Fermi Notify a causa dei costi elevati di mantenimento.</p>
+		<p>Cambiamenti principali:</p>
+		<ul style="margin: 0; padding-bottom: 10px;">
+			<li><b>Dominio</b>: il sito si sposta da <i>ferminotify.me</i> a <i><a href="//fn.lkev.in" class="link">fn.lkev.in</a></i>. Consulta la <a href="/faq" class="link">FAQ</a> per conoscere i domini e mirror attivi.</li>
+			<li><b>Email</b>: il server email è stato disattivato e stiamo lavorando per ripristinarlo. Le notifiche Telegram sono ancora operative. Puoi controllare lo stato del notifier <a href="//status.fn.lkev.in" class="link">qui</a>.</li>
+		</ul>
+		<p style="padding-bottom: 10px;">Ricordiamo che l'intero codice sorgente è open source e disponibile a <a class="link" href="/source">questo link</a>.</p>
+		<p style="padding-bottom: 10px;">Per ulteriori informazioni, contattaci su Instagram
+			<i><a class="link" href="https://www.instagram.com/ferminotify/"><i class="fa-brands fa-instagram"></i> ferminotify</a></i>.</p>
+		<p>Grazie per la comprensione,<br/>Il team di Fermi Notify</p>
+	</div>
+</div>
+		`;
+		document.body.innerHTML += moveDomainHTML;
+	}
+	function moveDomainClose(){
+		document.getElementById("moveDomain").style.animation = "hideAlert 0.5s ease-in-out forwards";
+		localStorage.setItem("moveDomain", "hide");
+	}
+</script>

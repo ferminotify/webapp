@@ -1,0 +1,133 @@
+/* BUY ME A COFFEE
+   FONTI
+   https://it.freepik.com/vettori-gratuito/collezione-ragnatela-ragno-disegnati-a-mano_5630377.htm#query=ragnatele&position=6&from_view=search&track=sph"
+*/
+
+.coffee-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.coffee-button {
+    display: flex;
+    color: var(--on-surface);
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    padding: 7px 0;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.coffee-button::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0;
+    transition: all 0.3s;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-top-color: var(--on-surface-primary);
+    border-bottom-color: var(--on-surface-primary);
+    transform: scale(0.1, 1);
+}
+
+.coffee-button:hover::before {
+    opacity: 1;
+    transform: scale(1, 1);
+}
+
+.coffee-button:hover .coffee-link {
+    margin: 0 10px;
+}
+
+.coffee-button:hover .coffee-icon,
+.coffee-button:hover .coffee-arrow {
+    color: var(--on-surface-primary);
+}
+
+.coffee-link {
+    display: flex;
+    transition: all ease-in-out 0.3s;
+}
+
+.coffee-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.coffee-icon {
+    font-size: 30px;
+    margin: 0;
+    padding-right: 10px;
+}
+
+.coffee-text-small {
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.coffee-text-big {
+    margin: 0;
+    font-size: 1.25em;
+}
+
+.coffee-arrow {
+    margin: 0;
+    padding: 0 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    .coffee-container {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .coffee-arrow {
+        display: none;
+    }
+
+    .coffee-icon {
+        font-size: 30px;
+        margin: 0;
+        padding-right: 10px;
+        color: var(--on-surface-primary);
+    }
+
+    .coffee-text-small {
+        font-size: 0.87em;
+        margin: 0;
+    }
+
+    .coffee-text-big {
+        font-size: 1.2em;
+    }
+
+    .coffee-button:before {
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+}
+
+@media only screen and (max-width: 333px) {
+    .coffee-text-big {
+        font-size: 5vw;
+    }
+
+    .coffee-text-small {
+        font-size: 3.5vw;
+    }
+
+    .coffee-icon {
+        font-size: 8vw;
+    }
+}

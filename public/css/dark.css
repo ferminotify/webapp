@@ -1,0 +1,18 @@
+:root {
+	--surface: #141314;/*#1f1f1f;*/
+	--on-surface: #e3e3e3;
+	--on-surface-primary: #c2e7ff;
+
+	--primary: #004a77; /*#10547e;*/
+	--on-primary: #c2e7ff;
+	--primary-hover: #125680;
+	--primary-text-hover: #71bdec;
+	
+	--surface-variant: #211f21;/*#2d2f31;*/
+	--surface-variant-hover-bg: linear-gradient(0deg, rgba(196, 199, 197, .08), rgba(196, 199, 197, .08));
+	--on-surface-variant: #c4c7c5;
+	
+	--muted: #6c757d;
+
+	--logo: #fff;
+}

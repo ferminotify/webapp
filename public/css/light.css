@@ -1,0 +1,18 @@
+:root {
+	--surface: #ffffff;
+	--on-surface: #333333;
+	--on-surface-primary: #1a7dba;
+
+	--primary: #004a77;
+	--on-primary: #ffffff;
+	--primary-hover: #125680;
+	--primary-text-hover: #4cafed;
+
+	--surface-variant: #e9effb;
+	--surface-variant-hover-bg: linear-gradient(0deg, rgba(0, 74, 119, 0.08), rgba(0, 74, 119, 0.08));
+	--on-surface-variant: #333333;
+
+	--muted: #999;
+
+	--logo: #000;
+}

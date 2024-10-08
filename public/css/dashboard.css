@@ -1,0 +1,327 @@
+.rounded-container:nth-child(1) {
+    background: radial-gradient(ellipse farthest-side at 76% 77%, rgba(245, 228, 212, 0.25) 4%, rgba(255, 255, 255, 0) calc(4% + 1px)), radial-gradient(circle at 76% 40%, #fef6ec 4%, rgba(255, 255, 255, 0) 4.18%), linear-gradient(135deg, #ff0000 0%, #000036 100%), radial-gradient(ellipse at 28% 0%, #ffcfac 0%, rgba(98, 149, 144, 0.5) 100%), linear-gradient(180deg, #cd6e8a 0%, #f5eab0 69%, #d6c8a2 70%, #a2758d 100%); background-blend-mode: normal, normal, screen, overlay, normal;
+    color: #0d004d;
+}
+
+.keywords {
+    display: flex;
+    gap: 10px;
+}
+.keywords-info{
+    margin: 4px 7px 10px 7px;
+    border-left: 1px solid var(--on-surface-primary);
+}
+.keywords-info li {
+    padding: 4px 0;
+}
+.maggioriInfo i{
+    color: var(--on-surface-primary);
+}
+.keywords-form-container{
+    margin: 15px 0;
+}
+.keyword-input {
+    width: min(100%, 350px);
+}
+.keywords-container {
+    padding-left: 3%;
+}
+.keyword-list-bullet{
+    padding-right: 10px;
+    font-size: 0.75em;
+}
+#keyword-list{
+    list-style: none;
+    padding: 0;
+}
+.keyword{
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+}
+.keyword:hover i{
+    color: var(--on-surface-primary);
+}
+.keyword-editing{
+    cursor: pointer;
+}
+
+#telegramCode {
+    margin: 10px 0;
+    color: var(--on-primary);
+    font-family: 'Source Code Pro', monospace;
+    border: 3px solid var(--on-primary);
+    border-radius: 10px;
+    padding: 5px 10px;
+    width: fit-content;
+    background-color: var(--primary);
+}
+
+.telegramCodeContainer {
+    margin: 20px 0;
+    cursor: pointer;
+    width: fit-content;
+}
+
+/* CHECKBOX */
+.invioNotificheContainer{
+    margin-bottom: 15px;
+    max-width: calc(490px - 3%); /* 980/2 - 3% padding */
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25px;
+}
+
+.switch .checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #666;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22.5px;
+    width: 22.5px;
+    left: 3px;
+    bottom: 1px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.checkbox:checked+.slider {
+    background-color: var(--primary);
+}
+
+.checkbox:focus+.slider {
+    box-shadow: 0 0 1px var(--primary);
+}
+
+.checkbox:checked+.slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.checkNot-container {
+    width: 100%;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--on-surface);
+}
+
+.invioNotificheContainer .checkNot-container:last-child {
+    border-bottom: 1px solid var(--on-surface);
+}
+
+
+/* REPORT PROBLEM */
+.reportProblem{
+    font-size: 12px;
+    margin: 10px 0;
+}
+.reportProblem p{
+    margin: 5px 0;
+}
+
+@keyframes blink{
+    0%{
+        opacity: 0.5;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+.info .inputs{
+    width: 100%;
+}
+
+.info-input, .info-input:disabled{
+    width: min(100%, 325px);
+    padding: 10px;
+    margin: 5px 0 0 0;
+    display: inline-block;
+    border: none;
+    outline: 1px solid var(--muted);
+    border-radius: 10px;
+    background: transparent;
+    height: 18px;
+}
+
+.info-input::placeholder{
+    color: var(--muted);
+}
+
+.info-input.inserted, .info-gender-select.inserted{
+    outline: 1px solid var(--on-surface-primary);
+    color: var(--on-surface);
+    background: transparent;
+}
+
+.info-input:focus{
+    background: transparent;
+    color: var(--on-surface);
+    outline-color: var(--on-surface-primary);
+}
+
+.info-edit-btn-container{
+    height: 100%;
+    width: 30%;
+    margin: 0 5px;
+}
+
+.info-edit-btn-container i{
+    padding: 0 12px;
+    /*background-color: var(--primary-color);*/
+    background: transparent;
+    border-radius: 10px;
+    color: var(--on-surface);
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.info-edit-btn-container i:hover{
+    color: var(--primary-color);
+}
+
+.info-editing-btns{
+    display: none;
+}
+
+.info-editing-btns button{
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+.info-gender-select, .info-gender-select:disabled{
+    background: transparent;
+    width: min(100%, 345px);
+    height: 38px;
+    margin: 5px 0 0 0;
+    display: inline-block;
+    border: none;
+    outline: 1px solid var(--muted);
+    border-radius: 10px;
+    padding: 0 5px;
+    color: var(--muted);
+    opacity: 1;
+}
+
+.info-gender-select:not(:disabled){
+    color: var(--on-surface);
+}
+
+.info-gender-select option{
+    color: #000;
+}
+
+.info-gender-select:focus{
+    background: transparent;
+    outline-color: var(--on-surface-primary);
+}
+
+.info-toEdit-btns .lds-grid {
+	display: none;
+	position: relative;
+	width: 26.67px;
+	height: 26.67px;
+    margin: 1px 6px 0 6px;
+}
+
+.info-toEdit-btns .lds-grid div {
+	position: absolute;
+	width: 5.33px;
+	height: 5.33px;
+	border-radius: 50%;
+	background: var(--on-surface);
+	animation: lds-grid 1.2s linear infinite;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(1) {
+	top: 2.67px;
+	left: 2.67px;
+	animation-delay: 0s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(2) {
+	top: 2.67px;
+	left: 10.67px;
+	animation-delay: -0.4s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(3) {
+	top: 2.67px;
+	left: 18.67px;
+	animation-delay: -0.8s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(4) {
+	top: 10.67px;
+	left: 2.67px;
+	animation-delay: -0.4s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(5) {
+	top: 10.67px;
+	left: 10.67px;
+	animation-delay: -0.8s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(6) {
+	top: 10.67px;
+	left: 18.67px;
+	animation-delay: -1.2s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(7) {
+	top: 18.67px;
+	left: 2.67px;
+	animation-delay: -0.8s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(8) {
+	top: 18.67px;
+	left: 10.67px;
+	animation-delay: -1.2s;
+}
+
+.info-toEdit-btns .lds-grid div:nth-child(9) {
+	top: 18.67px;
+	left: 18.67px;
+	animation-delay: -1.6s;
+}

@@ -1,0 +1,157 @@
+.section{
+    margin: 25px 0;
+    width: 100%;
+    max-width: 980px;
+    width: 100%;
+	transition: all 0.3s ease-in-out;
+}
+
+.sub-section{
+    margin: 50px 0;
+    width: 100%;
+    max-width: 980px;
+}
+.sub-section h2 i{
+    color: var(--on-surface-primary);
+}
+
+.firstTitle {
+    padding-top: 3%;
+    width: 100%;
+    border-bottom: 1px solid #fff;
+    margin-bottom: 75px;
+}
+.rounded-container .firstTitle{
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+.rounded-container:has(.firstTitle){
+	padding: 25px 0;
+	margin-bottom: 15px;
+}
+
+.basic-form{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.basic-form .material-textfield input:focus{
+    outline-color: var(--on-surface-primary);
+}
+.basic-form .material-textfield input:focus + label{
+    color: var(--on-surface-primary);
+}
+.basic-form input{
+    width: calc(100% - 30px);
+    background-color: var(--surface-variant);
+}
+.basic-form label{
+    background-color: var(--surface-variant);
+}
+
+.input-warning{
+    display: none;
+}
+
+.form-logo{
+    width: min(calc(100% - 100px), 300px);
+}
+
+.two-inputs-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+.two-inputs-container input{
+    width: calc(100% - 30px);
+    background-color: var(--surface-variant);
+}
+#PSWShowHideIcon i{
+    position: absolute;
+    transform: translateX(-35px) translateY(17px);
+    color: var(--muted);
+    cursor: pointer;
+}
+input:focus + label + #PSWShowHideIcon i{
+    color: var(--on-surface-primary);
+}
+
+/* select starting stylings https://codepen.io/danny_englander/pen/poooeme */
+.select {
+    border: 0;
+    border-radius: 10px;
+    outline: 1px solid var(--muted);
+	position: relative;
+    transition: all 0.1 ease-out;
+    width: calc(100% - 6px);
+}
+.select-text {
+	position: relative;
+	font-family: inherit;
+	background-color: transparent;
+	width: 100%;
+	padding: 1rem 0.7rem;
+	font-size: 1rem;
+	border-radius: 0;
+	border: none;
+    color: var(--on-surface);
+}
+.select-text option {
+    color: #000;
+}
+.select-text:focus {
+    outline: none;
+}
+.select:focus-within {
+    outline: 1px solid var(--on-surface-primary);
+}
+/* Use custom arrow */
+.select .select-text {
+	appearance: none;
+	-webkit-appearance:none
+}
+.select:after {
+	position: absolute;
+	top: 24px;
+	right: 10px;
+	/* Styling the down arrow */
+	width: 0;
+	height: 0;
+	padding: 0;
+	content: '';
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 6px solid var(--muted);
+	pointer-events: none;
+}
+/* LABEL */
+.select-label {
+	color: var(--muted);
+	font-size: 1rem;
+	font-weight: normal;
+	position: absolute;
+	pointer-events: none;
+	transition: 0.2s ease all;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 0.3rem;
+    margin: 0 0.5rem;
+}
+/* active state */
+.select-text:focus ~ .select-label {
+	color: var(--on-surface-primary);
+	top: 0px;
+	transition: 0.2s ease all;
+    transform: translateY(-50%) scale(.9);
+}
+.select-text:valid ~ .select-label{
+    top: 0px;
+    transform: translateY(-50%) scale(.9);
+}
+.select:focus-within:after {
+    border-top-color: var(--on-surface-primary);
+}

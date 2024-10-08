@@ -1,0 +1,268 @@
+/***** text typing *****/
+.rounded-container:nth-child(1){
+    background-image: url("/img/banner/faq.png");
+    background-image: url("/img/banner/faq.png"), linear-gradient(55deg, #1f1f1f 0%, #1f1f1f 45%, #323232 calc(45% + 1px), #323232 65%, #71bdec calc(65% + 1px), #71bdec 75%, #c2e7ff calc(75% + 1px), #c2e7ff 100%);
+    background-size:contain;
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+.rounded-container:has(.container-title) {
+	background-color: var(--surface);
+}
+.rounded-inner:has(.container-title) {
+	margin: 15px 0;
+	padding: 25px 0;
+}
+
+.container-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease-in-out;
+}
+
+.container-subtitle p {
+    color: var(--on-surface);
+    text-align: center;
+    width: 100%;
+	line-height: 2;
+    font-weight: 600;
+    font-size: 25px;
+    float: left;
+    position: relative;
+}
+
+.container-subtitle {
+    float: left;
+    height: 100%;
+    width: fit-content;
+    height: auto;
+}
+
+.container-subtitle p {
+    text-align: left;
+}
+
+.container-mid {
+    width: 100%;
+    display: grid;
+    place-items: left;
+    max-width: 980px;
+    padding-left: min(11%, 200px);
+}
+
+@media only screen and (max-width: 520px) {
+
+    .container-subtitle p {
+        font-size: 6vw;
+    }
+
+    .container-mid {
+        padding: 0;
+    }
+
+    .container-subtitle {
+        padding: 0;
+    }
+}
+
+p.main-subtitle1::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border-left: 2px solid transparent;
+    background-color:var(--surface);
+    animation:
+        typing 0.75s steps(18) forwards;
+}
+
+p.main-subtitle2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border-left: 2px solid transparent;
+    background-color:var(--surface);
+    animation:
+        typing 0.75s steps(20) forwards;
+    animation-delay: 1s;
+}
+
+p.main-subtitle3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border-left: 2px solid transparent;
+    background-color:var(--surface);
+    animation:
+        typing 0.75s steps(19) forwards;
+    animation-delay: 2s;
+}
+
+p.main-subtitle4::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border-left: 2px solid transparent;
+    background-color:var(--surface);
+    animation:
+        typing 0.75s steps(9) forwards;
+    animation-delay: 3s;
+}
+
+p.main-subtitle5::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border-left: 2px solid transparent;
+    background-color:var(--surface);
+    animation:
+        typing 0.03s steps(1) forwards;
+    animation-delay: 4s;
+}
+
+@keyframes typing {
+    0% {
+        border-color: var(--on-surface);
+    }
+
+    99.9% {
+        border-color: var(--on-surface);
+    }
+
+    100% {
+        left: 100%;
+        margin: 0 -15px 0 0px;
+        border-color: transparent;
+        width: 0%;
+    }
+}
+
+/******/
+
+.rounded-container:has(.firstTitle){
+	margin-bottom: 15px !important;
+}
+
+.question, .answer{
+	line-height: 150%;
+	text-align: justify;
+	font-size: 16px;
+}
+
+.question{
+	margin: 30px 5%;
+}
+
+.answer{
+	line-height: 1.5;
+}
+
+.answer-staccato{
+	padding-top: 10px;
+}
+
+.secondTitle{
+	border-left: 1px solid white;
+}
+
+.question h3{
+	margin: 10px 0 15px 0;
+}
+
+.indexElemContainer{
+	display: none;
+	margin-top: 50px; /* for btn-container to not cover text when scale */
+}
+
+.indexElemShow{
+	display: block;
+}
+
+.faqIndexMobile{
+	display: none;
+}
+
+
+.domain, .domain *{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.dot{
+    border-radius: 50%;
+    width: 0.8em;
+    height: 0.8em;
+    margin-right: 0.5em;
+    cursor: pointer;
+}
+.dot.active{
+    background-color: rgb(34, 139, 73);
+}
+.dot.inactive{
+    background-color: rgb(192, 64, 64);
+}
+.dot.verifying{
+    background-color: rgb(221, 161, 0);
+}
+.dot.na{
+    background-color: rgb(121, 121, 121);
+}
+
+#tooltip {
+    position: absolute; /* Permet le placement dynamique près du curseur */
+    padding: .4rem .6rem;
+    background-color: var(--surface);
+    border-radius: .25rem;
+    font-size: .75em;
+    font-weight: 500;
+    color: var(--on-surface);
+    pointer-events: none; /* Désactive les événements de la souris pour le tooltip */
+    transition: transform 0.1s ease-out;
+    -webkit-transition: transform 0.1s ease-out 0s;
+    z-index: 9999; /* Assure que le tooltip apparaît au-dessus des autres éléments */
+    opacity: .96;
+}
+
+.visible {
+    visibility: visible; /* Rend le tooltip visible */
+}
+
+.invisible {
+    visibility: hidden; /* Cache le tooltip par défaut */
+}
+
+
+@media only screen and (max-width: 765px){
+	.faqIndex{
+		display: none;
+	}
+	.faqIndexMobile{
+		display: grid;
+	}
+}
