@@ -33,7 +33,8 @@ jobs:
       run: |
         docker build -t zupup/webapp:${{ github.sha }} .  # Tag with commit SHA for uniqueness
 
-    # Step 5: Push the image to Docker Hub (optional)
+    # Step 5: Push both tags to Docker Hub
     - name: Push the image to Docker Hub
       run: |
-        docker push zupup/webapp:${{ github.sha }}
+        docker push my-node-image:${{ github.sha }}
+        docker push my-node-image:latest
