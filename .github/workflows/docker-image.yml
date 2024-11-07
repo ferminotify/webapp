@@ -36,5 +36,5 @@ jobs:
     # Step 5: Push both tags to Docker Hub
     - name: Push the image to Docker Hub
       run: |
-        docker push my-node-image:${{ github.sha }}
-        docker push my-node-image:latest
+        docker push zupup/webapp:${{ github.sha }}
+        docker push zupup/webapp:latest
