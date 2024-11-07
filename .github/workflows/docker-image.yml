@@ -32,6 +32,7 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build -t zupup/webapp:${{ github.sha }} .  # Tag with commit SHA for uniqueness
+        docker tag zupup/webapp:${{ github.sha }} zupup/webapp:latest  # Tag the same image as latest
 
     # Step 5: Push both tags to Docker Hub
     - name: Push the image to Docker Hub
