@@ -36,4 +36,4 @@ jobs:
     # Step 5: Push the image to Docker Hub (optional)
     - name: Push the image to Docker Hub
       run: |
-        docker push webapp:${{ github.sha }}
+        docker push zupup/webapp:${{ github.sha }}
