@@ -1,0 +1,29 @@
+services:
+  web-app:
+    image: zupup/webapp:test
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/home/node/app
+    expose:
+      - "3000"
+    ports: # use if it is necessary to expose the container to the host machine
+      - "3000:3000"
+    command: "npm start"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ferminotify.rule=Host(`ferminotify.sirico.dev`)"
+      - "traefik.http.routers.ferminotify.entrypoints=websecure"
+      - "traefik.http.routers.ferminotify.tls=true"
+      - "traefik.http.routers.ferminotify.tls.certresolver=cloudflare"
+    networks:
+      - web
+    restart: always
+
+networks:
+  web:
+    external: true
+    name: traefik_default
+

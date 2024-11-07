@@ -31,7 +31,7 @@ jobs:
     # Step 4: Build the Docker image
     - name: Build the Docker image
       run: |
-        docker build -t webapp:${{ github.sha }} .  # Tag with commit SHA for uniqueness
+        docker build -t zupup/webapp:${{ github.sha }} .  # Tag with commit SHA for uniqueness
 
     # Step 5: Push the image to Docker Hub (optional)
     - name: Push the image to Docker Hub
