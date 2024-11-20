@@ -253,9 +253,9 @@
         <!-- ON/OFF SETTINGS -->
         <div class="sub-section">
             <h2><i class="fa-solid fa-gear"></i> Impostazioni</h2>
-            <div class="invioNotificheContainer">
+            <div class="invioNotificheContainer" id="canali">
                 <p style="padding-bottom: 10px"><i class="fa-solid fa-message primary-text"></i>
-                    <span>Invio notifiche</span>
+                    <span>Canali notifiche</span>
                 </p>
                 <div class="checkNot-container sendEmail">
                     Email
@@ -957,6 +957,23 @@
         $('#maggioriInfo').click(function () {
             $('#keywordsInfo').slideToggle(500);
         });
+    </script>
+
+    <script>
+        var URLParams = new URLSearchParams(window.location.search);
+        var section = URLParams.get("s");
+        if(section){
+            // scroll to section
+            var elem = document.getElementById(section);
+            if(elem){
+                var scroll = elem.getBoundingClientRect().top + window.scrollY - 50;
+                window.scrollTo({
+                    top: scroll,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        history.replaceState({}, document.title, "/" + "dashboard");
     </script>
 
     <%- include('includes/alertbanner.ejs') %>
