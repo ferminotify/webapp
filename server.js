@@ -74,7 +74,6 @@ app.get("/register", checkAuthenticated, async (req, res) => {
 });
 app.post("/users/register", checkAuthenticated, async (req, res) => {
 
-  /*
   let { name, surname, email, password, password2, gender } = req.body;
 
   name = name.trim();
@@ -136,8 +135,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
       }
     }
   );
-  */
-  res.redirect("/login"); // maintenance
+
 });
 
 app.get("/login", checkAuthenticated, (req, res) => {
