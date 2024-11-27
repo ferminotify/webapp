@@ -43,12 +43,12 @@ app.set('case sensitive routing', true);
 
 // Create a transporter object using custom SMTP settings
 const transporter = nodemailer.createTransport({
-  host: 'smtppro.zoho.eu',
-  port: 587, 
+  host: process.env.EMAIL_SERVICE_URL,
+  port: process.env.EMAIL_SERVICE_PORT,
   secure: false,
   auth: {
-    user: 'master@ferminotify.me',
-    pass: process.env.EMAIL_PASSWORD,
+    user: 'master@fn.lkev.in',
+    pass: process.env.EMAIL_SERVICE_PASSWORD,
   },
 });
 
@@ -222,7 +222,7 @@ app.get("/source", (req, res) => {
 });
 
 app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
-  /*
+  
   let { user_email } = req.body;
 
   if(!await userExistsByEmail(user_email)){
@@ -246,21 +246,21 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
     (err, result) => {
       if (err) {
         req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
-        console.log("ERR REQ CHANGE PSW " + user_email + ": " + err);
+        console.log("ERR REQ CHANGE PSW QUERY " + user_email + ": " + err);
         res.redirect("/password_reset");
         return;
       }
 
       const mailOptions = {
-        from: 'Fermi Notify Team <master@ferminotify.me>',
+        from: 'Fermi Notify Team <master@fn.lkev.in>',
         to: user_email,
         subject: `Codice di sicurezza OTP [${randomCode}]`,
-        html: `<!DOCTYPE html><html><body><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000;"><table style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:center;font-family:Helvetica,Arial,Liberation Serif,sans-serif;" width="620px" border="0" cellpadding="0" cellspacing="0"><tr style="background-color:#101010;background-image:url('https://ferminotify.me/img/email/2023/bgcolor.png');"><td style="width:100%;padding:30px 0;"><img src="https://ferminotify.me/img/email/2022/logo-long-white-trasp.png" style="width:80%;height:auto;color:#fff" alt="FERMI NOTIFY"></td></tr><tr style="background-color:#101010;background-image:url('https://ferminotify.me/img/email/2023/bgcolor.png');"><td><table style="width:100%;background-color:#fff;border:1px solid #e1e4e8;border-bottom:none;padding:30px 7% 15px 7%;border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-left-radius:10px;border-bottom-right-radius:10px;" border="0" cellpadding="0" cellspacing="0"><tr><td><h1 style="margin:0;font-size:24px;">Il tuo codice di sicurezza</h1></td></tr><tr><td style="text-align:left;"><p style="margin-bottom:15px;font-size:16px;">Ciao ${name},<br>il tuo <b>codice di sicurezza OTP</b> &egrave;:</p><table style="margin-left:auto;margin-right:auto;padding:5px 0;text-align:center;border-radius:10px;"><tr><td><h1 style="margin:0;text-align:center;width:30px;font-size:24px">${randomCode[0]}</h1></td><td><h1 style="margin:0;text-align:center;width:30px;font-size:24px">${randomCode[1]}</h1></td><td><h1 style="margin:0;text-align:center;width:30px;font-size:24px">${randomCode[2]}</h1></td><td><h1 style="margin:0;text-align:center;width:30px;font-size:24px">${randomCode[3]}</h1></td><td><h1 style="margin:0;text-align:center;width:30px;font-size:24px">${randomCode[4]}</h1></td><td><h1 style="margin:0;text-align:center;width:30px;font-size:24px">${randomCode[5]}</h1></td></tr></table></td></tr><tr><td style="font-size:13px;text-align:center;"><p style="margin-bottom:15px;">Il codice scadr&agrave; tra <b>15 minuti</b>.<br>Ti inviamo questo codice perch&eacute; hai richiesto di cambiare la password del tuo account. Se non hai richiesto di cambiare la password, puoi ignorare questa email.</p></td></tr></table></td></tr><!-- footer --><tr style="background-color:#101010;"><td style="padding:30px 7%;font-size:13px;position:relative;background-image:url('https://ferminotify.me/IMG/email/2023/bgcolor.png');background-position:top;background-size:cover;background-color:#101010;"><p style="color:#aaa;">Per supporto o informazioni, rispondere a questa email o contattare <a href="mailto:master@ferminotify.me" style="color:#FF9800">master@ferminotify.me</a>.</p><p style="margin-top:30px;margin-bottom:0;color:#aaa;"><i style="color:#aaa;">Fermi Notify Team</i></p><p style="margin:0"><a href="mailto:master@ferminotify.me" style="color:#FF9800">master@ferminotify.me</a></p><p style="margin-top:0"><a href="https://www.ferminotify.me" target="_blank" style="color:#FF9800">www.ferminotify.me</a></p></td></tr></table></main></body></html>`,
+        html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"border=0 cellpadding=0 cellspacing=0 width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"border=0 cellpadding=0 cellspacing=0><tr><td><h2 style="margin:10px 0">Il tuo codice di sicurezza</h2><tr><td style=text-align:left><p style=margin-bottom:0>Ciao ${name},<p style=line-height:1.3;margin-top:10px;margin-bottom:10px>il tuo <b>codice di sicurezza OTP</b> è:<table style="margin-left:auto;margin-right:auto;padding:5px 0;text-align:center;border-radius:10px"><tr><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[0]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[1]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[2]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[3]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[4]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[5]}</h1></table><tr><td style=font-size:13px;text-align:center><p style=margin-bottom:15px>Il codice scadrà tra <b>15 minuti</b>.<br>Ti inviamo questo codice perché hai richiesto di cambiare la password del tuo account. Se non hai richiesto di cambiare la password, puoi ignorare questa email.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=icon-allmuted.png style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrato a Fermi Notify. Puoi disattivare o modificare le preferenze sulle notifiche <a href="https://fn.lkev.in/dashboard?s=canali"style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>qui</a>.</table></main>`
       };
       
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log("ERR REQ CHANGE PSW: " + user_email + ": " + error);
+          console.log("ERR REQ CHANGE PSW SENDMAIL " + user_email + ": " + error);
           req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
           res.redirect("/password_reset");
         } else {
@@ -273,8 +273,7 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
       });
     }
   );
-  */
-  res.redirect("/login"); // maintenance
+
 });
 
 app.post("/user/otp-change-password", async (req, res) => { // PWD-CNG #2

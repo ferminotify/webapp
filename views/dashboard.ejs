@@ -261,13 +261,10 @@
                     Email
                     <label class="switch">
                         <input type="checkbox" checked class="checkbox" id="sendEmail"
-                            onclick="submitPreferences()" disabled>
+                            onclick="submitPreferences()">
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <p style="border-bottom: 1px solid var(--on-surface); padding-bottom: 10px; font-size: 0.84rem; color: var(--muted);"><i class="fa-solid fa-triangle-exclamation"></i> 
-                    Le notifiche via email sono state disattivate, se hai bisogno di assistenza <a href="/faq" style="color:var(--muted); text-decoration: underline;">contattaci</a>.
-                </p>
                 <% if (tgun.charAt(0) !='X' ) { %>
                     <div class="checkNot-container sendEmail">
                         Telegram
