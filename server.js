@@ -107,7 +107,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
 
   // If no errors runs as it follows
   hashedPassword = await bcrypt.hash(password, 10);
-  telegramTemporaryCode = await getTelegramTemporaryCode();
+  const telegramTemporaryCode = await getTelegramTemporaryCode();
   pool.query(
     `SELECT * FROM subscribers
       WHERE email = $1`,
@@ -125,14 +125,42 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
           `INSERT INTO subscribers (name, surname, email, password, notifications, telegram, gender, notification_preferences)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING id, password`,
-          [name, surname, email, hashedPassword, -2, telegramTemporaryCode, gender, 2],
+          [name, surname, email, hashedPassword, -1, telegramTemporaryCode, gender, 2],
           (err, results) => {
             if (err) {
-              throw err;
+              req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${err.message})`);
             } else {
+              // success db insert
               console.log("SUCCESS REGISTER WAITING FOR CONFIRMATION: " + email + " - " + telegramTemporaryCode);
+
+              // send email
+              const mailOptions = {
+                from: 'Fermi Notify Team <master@fn.lkev.in>',
+                to: email,
+                subject: `Conferma la registrazione`,
+                html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Ciao ${name}!</h2><tr><td style=text-align:left><p style=line-height:1.3>Per completare la registrazione, conferma il tuo indirizzo email:<tr><td style="padding:15px 0"><a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style="font-size:14px;letter-spacing:1.2px;padding:13px 17px;font-weight:600;background-color:#004a77;border-radius:10px;color:#fff;text-decoration:none"target=_blank>Conferma email</a><tr><td style=text-align:left><p style=line-height:1.3>Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo.<tr><td style=text-align:left><p style=line-height:1.3>A presto!</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Il bottone non funziona? Conferma l'email attraverso il seguente link: <a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style=color:#004a77 target=_blank>https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}</a>.<p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a <i>Fermi Notify</i>. Se non sei stato tu, ignora questa email.</table></main>`
+              };
+              
+              transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                  console.log("ERR REGISTER SENDMAIL " + email + ": " + error);
+                  
+                  // delete record from db
+                  pool.query(`DELETE FROM subscribers WHERE id = $1`, [results.rows[0].id], (err, results) => {
+                    if (err) req.flash("error_msg", `Si è verificato un errore! Eliminazione record dal database non riuscita. Per favore, contattaci su Instagram @ferminotify.`);
+                    res.redirect("/login");
+                    return;
+                  });
+
+                  req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${error.message})`);
+                } else {
+                  console.log('SUCCESS REGISTER EMAIL SENT TO ' + email + ': ' + info.response);
+                }
+              });
+
+              req.flash("success_msg", "Ti abbiamo inviato una mail per confermare l'account! (controlla anche lo SPAM)");
+
             }
-            req.flash("success_msg", "Ti abbiamo inviato una mail per confermare l'account! (controlla anche lo SPAM)");
             res.redirect("/login");
           }
         );
@@ -180,18 +208,45 @@ app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
 });
 
 app.get("/users/register/confirmation/:id", async (req, res, next) => {
+
   let userId = req.params.id;
 
   let email = await getUserEmailWithTelegramID(userId);
+
   if(email == undefined){
     req.flash("error_msg", "Link di conferma non valido!");
     console.log("ERR CONFIRMATION " + userId + ": email not found");
     return res.redirect("/login");
   }
+
   if(await getNumberNotification(email) > -1){
     req.flash("error_msg", "Account già confermato! Fai il login per accedere.");
     return res.redirect("/login");
   }
+
+  let gender = await getGenderByEmail(email);
+  let name = await getFirstNameByEmail(email);
+
+  // send welcome email
+  const mailOptions = {
+    from: 'Fermi Notify Team <master@fn.lkev.in>',
+    to: email,
+    subject: `Welcome!`,
+    html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Benvenut${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify!</h2><tr><td style=text-align:left><h4 style=margin-bottom:0>Ciao ${name}!</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Grazie per esserti registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"}, di seguito ci sono alcune indicazioni sul funzionamento di Fermi Notify.<h4 style=margin-bottom:0>Keyword</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a> potrai inserire le tue <b>keyword</b>, necessarie per trovare le variazioni dell'orario che ti riguardano. Ti invitiamo ad aggiungere le parole che riconducono a te (il tuo cognome, la tua classe, i tuoi corsi, ecc...).<br>Presta attenzione alla <b>formattazione</b> delle keywords, dev'essere uguale a quella scritta nel calendario giornaliero (es. <i>4CIIN</i>, non "4 CIIN" o "4CIN")!<h4 style=margin-bottom:0>Notifiche</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Vengono inviate notifiche sulle variazioni che contengono le tue keyword tramite email e/o Telegram. Puoi modificare le preferenze sulle notifiche nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a>.<ul style=padding-top:0;line-height:1.3;margin-top:0><li>Se c'è una variazione dell'orario, riceverai una notifica che riassume tutte le variazioni della giornata alle <b>6 del giorno stesso</b>.<li>Se viene pubblicata una variazione dell'orario poche ore prima che si verifichi (es. sostituzione dell'ultimo minuto), verrai notificat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} <b>all'istante</b>.</ul><p style=margin-top:10px;margin-bottom:10px>Per maggiori informazioni, visita la <a href=https://fn.lkev.in/faq style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>FAQ</a>.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify. Puoi disattivare o modificare le preferenze sulle notifiche <a href="https://fn.lkev.in/dashboard?s=canali"style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>qui</a>.</table></main>`
+  };
+  
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("ERR WELCOME SENDMAIL " + email + ": " + error);
+      req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${error.message})`);
+      res.redirect("/login");
+      return;
+    } else {
+      console.log('SUCCESS WELCOME EMAIL SENT TO ' + email + ': ' + info.response);
+    }
+  });
+
+
   const a = await incrementNumberNotification(userId);
   
   req.flash("success_msg", "Account confermato! Fai il login per accedere.");
