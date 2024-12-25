@@ -1,5 +1,5 @@
 {
-  "name": "servizi",
+  "name": "ferminotify",
   "version": "1.0.0",
   "description": "Webapp",
   "main": "index.js",
@@ -10,8 +10,8 @@
     "type": "git",
     "url": "ù"
   },
-  "author": "Bini, M.",
-  "license": "MIT",
+  "author": "Fermi Notify Team",
+  "license": "CC-BY-SA-4.0 license",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",

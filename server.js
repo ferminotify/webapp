@@ -545,7 +545,7 @@ app.post("/user/edit", async function (req, res) {
 // get domain status
 app.get("/status", async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.send("OK");
+  res.send("OK👍");
 });
 
 // user user instead of email so that it does not have to pass user.email which may result in undefined error
