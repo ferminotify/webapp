@@ -1,4 +1,4 @@
-#alertbanner{
+.alertbanner, #alertbanner{
 	position: fixed;
 	bottom: 25px;
 	right: 5vw;
@@ -12,11 +12,11 @@
 	word-wrap: break-word;
 }
 
-#alertbanner:hover {
+.alertbanner, #alertbanner:hover {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
-#alertbanner ul li:nth-child(n+2){
+.alertbanner, #alertbanner ul li:nth-child(n+2){
 	padding-top: 10px;
 }
 
@@ -97,7 +97,7 @@
 
 
 @media only screen and (min-width: 980px) {
-	#alertbanner{
+	.alertbanner, #alertbanner{
 		right: 10vw;
 	}
 }

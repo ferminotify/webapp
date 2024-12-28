@@ -3,6 +3,13 @@
     color: #0d004d;
 }
 
+.information{
+    font-size: 12px;
+}
+.maggioriInfo-container{
+    font-size: 14px;
+}
+
 .keywords {
     display: flex;
     gap: 10px;
@@ -64,9 +71,31 @@
     width: fit-content;
 }
 
+.impostazioni-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+
+.user-info-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+@media screen and (max-width: 1050px){
+    .impostazioni-container{
+        grid-template-columns: 1fr;
+        gap: 0px;
+    }
+    .user-info-container{
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
 /* CHECKBOX */
 .invioNotificheContainer{
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     max-width: calc(490px - 3%); /* 980/2 - 3% padding */
 }
 
@@ -166,7 +195,17 @@
     width: 100%;
 }
 
-.info-input, .info-input:disabled{
+.notTime{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#timepicker:not(:disabled){
+    color: var(--on-surface);
+}
+
+.dashboard-input, .dashboard-input:disabled{
     width: min(100%, 325px);
     padding: 10px;
     margin: 5px 0 0 0;
@@ -178,29 +217,33 @@
     height: 18px;
 }
 
-.info-input::placeholder{
+.dashboard-input:disabled{
     color: var(--muted);
 }
 
-.info-input.inserted, .info-gender-select.inserted{
+.dashboard-input::placeholder{
+    color: var(--muted);
+}
+
+.dashboard-input.inserted, .dashboard-select.inserted{
     outline: 1px solid var(--on-surface-primary);
     color: var(--on-surface);
     background: transparent;
 }
 
-.info-input:focus{
+.dashboard-input:focus{
     background: transparent;
     color: var(--on-surface);
     outline-color: var(--on-surface-primary);
 }
 
-.info-edit-btn-container{
+.dashboard-edit-btn-container{
     height: 100%;
     width: 30%;
     margin: 0 5px;
 }
 
-.info-edit-btn-container i{
+.dashboard-edit-btn-container i{
     padding: 0 12px;
     /*background-color: var(--primary-color);*/
     background: transparent;
@@ -210,15 +253,15 @@
     cursor: pointer;
 }
 
-.info-edit-btn-container i:hover{
+.dashboard-edit-btn-container i:hover{
     color: var(--primary-color);
 }
 
-.info-editing-btns{
+.dashboard-editing-btns{
     display: none;
 }
 
-.info-editing-btns button{
+.dashboard-editing-btns button{
     background: none;
 	color: inherit;
 	border: none;
@@ -228,7 +271,7 @@
 	outline: inherit;
 }
 
-.info-gender-select, .info-gender-select:disabled{
+.dashboard-select, .dashboard-select:disabled{
     background: transparent;
     width: min(100%, 345px);
     height: 38px;
@@ -242,20 +285,20 @@
     opacity: 1;
 }
 
-.info-gender-select:not(:disabled){
+.dashboard-select:not(:disabled){
     color: var(--on-surface);
 }
 
-.info-gender-select option{
+.dashboard-select option{
     color: #000;
 }
 
-.info-gender-select:focus{
+.dashboard-select:focus{
     background: transparent;
     outline-color: var(--on-surface-primary);
 }
 
-.info-toEdit-btns .lds-grid {
+.dashboard-toEdit-btns .lds-grid {
 	display: none;
 	position: relative;
 	width: 26.67px;
@@ -263,7 +306,7 @@
     margin: 1px 6px 0 6px;
 }
 
-.info-toEdit-btns .lds-grid div {
+.dashboard-toEdit-btns .lds-grid div {
 	position: absolute;
 	width: 5.33px;
 	height: 5.33px;
@@ -272,55 +315,55 @@
 	animation: lds-grid 1.2s linear infinite;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(1) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(1) {
 	top: 2.67px;
 	left: 2.67px;
 	animation-delay: 0s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(2) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(2) {
 	top: 2.67px;
 	left: 10.67px;
 	animation-delay: -0.4s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(3) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(3) {
 	top: 2.67px;
 	left: 18.67px;
 	animation-delay: -0.8s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(4) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(4) {
 	top: 10.67px;
 	left: 2.67px;
 	animation-delay: -0.4s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(5) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(5) {
 	top: 10.67px;
 	left: 10.67px;
 	animation-delay: -0.8s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(6) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(6) {
 	top: 10.67px;
 	left: 18.67px;
 	animation-delay: -1.2s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(7) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(7) {
 	top: 18.67px;
 	left: 2.67px;
 	animation-delay: -0.8s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(8) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(8) {
 	top: 18.67px;
 	left: 10.67px;
 	animation-delay: -1.2s;
 }
 
-.info-toEdit-btns .lds-grid div:nth-child(9) {
+.dashboard-toEdit-btns .lds-grid div:nth-child(9) {
 	top: 18.67px;
 	left: 18.67px;
 	animation-delay: -1.6s;

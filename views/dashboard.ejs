@@ -43,6 +43,12 @@
     <link rel="stylesheet" href="/css/page.css" type="text/css">
     <link rel="stylesheet" href="/css/dashboard.css" type="text/css">
     <link rel="stylesheet" href="/css/buymeacoffee.css" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="css/mdtimepicker.css">
+    <script type="text/javascript" src="js/mdtimepicker.js"></script>
+
+    <script src="/js/alertbanner.js"></script>
+
     <link rel="preload" href="/css/dark.css" as="style">
 	<link rel="preload" href="/css/light.css" as="style">
     <link rel="stylesheet" href="/css/dark.css" type="text/css" id="themeCSS">
@@ -66,6 +72,7 @@
         var USER_FIRSTNAME = "<%= user_firstname %>";
         var USER_LASTNAME = "<%= user_lastname %>";
         var USER_GENDER = "<%= user_gender %>";
+        var NOT_TIME = "<%= n_time %>";
         function writeUserName(){
             $(".user-name").html(USER_FIRSTNAME);
         }
@@ -99,7 +106,7 @@
 
         <!--h2 style="margin-bottom: 25px; color:#fff"><span id="greeting"></span> <span class="highlighted-text"><span class="user-name"></span></span>,</h2-->
 
-        <p><i class="fa-solid fa-triangle-exclamation" style="color: var(--on-surface-primary);"></i> Il sistema non è ufficialmente riconosciuto dalla presidenza dell'Istituto Superiore "Enrico Fermi" di Mantova. Eventuali malfunzionamenti sono a carico dello staff e non sono valide giustificazioni in uffici di segreteria e presidenza.</p>
+        <p class="information"><i class="fa-solid fa-triangle-exclamation" style="color: var(--on-surface-primary);"></i> Il sistema non è ufficialmente riconosciuto dalla presidenza dell'Istituto Superiore "Enrico Fermi" di Mantova. Eventuali malfunzionamenti sono a carico dello staff e non sono valide giustificazioni in uffici di segreteria e presidenza.</p>
 
         <!-- Keyword form -->
         <div class="sub-section">
@@ -121,7 +128,7 @@
 
                 <div class="keywords-form-container">
 
-                    <form action="/keyword" method="POST" class="keywords material-textfield" onsubmit="loading(0)" id="submitForm">
+                    <form action="/user/keyword" method="POST" class="keywords material-textfield" onsubmit="loading(0)" id="submitForm">
                         <input type="text" id="keyword" name="keyword" placeholder="Es. 5CIIN" class="keyword-input" required style="text-transform: uppercase;"/>
                         <script>
                             $(function() {
@@ -136,12 +143,21 @@
                     </form>
                 </div>
 
-                <p id="maggioriInfo" class="maggioriInfo"><i class="fa-solid fa-circle-info"></i> <span style="text-decoration: underline; text-decoration-color: var(--on-surface-primary); cursor:pointer">Maggiori informazioni</span></p>
-                <ul class="keywords-info" id="keywordsInfo" style="display: none;">
-                    <li>Aggiungi le parole chiave alla lista per essere notificat<span class="user-gender-o-a"></span> quando è presente un evento che la riguarda nel calendario giornaliero. Ti consigliamo di inserire la tua classe e il tuo cognome.</li>
-                    <li>Per rimuovere una parola chiave, reinseriscila o clicca sul bottone <i class="fa-solid fa-pen-to-square"></i>.</li>
-                    <li>Per pi&ugrave; informazioni, visita il <a href="./faq" class="link">FAQ</a>.</li>
-                </ul>
+                <div class="maggioriInfo-container">
+                    <p id="maggioriInfo" class="maggioriInfo"><i class="fa-solid fa-circle-info"></i> <span style="text-decoration: underline; text-decoration-color: var(--on-surface-primary); cursor:pointer">Maggiori informazioni</span></p>
+                    <ul class="keywords-info" id="keywordsInfo" style="display: none;">
+                        <li>Aggiungi le parole chiave alla lista per essere notificat<span class="user-gender-o-a"></span> quando è presente un evento che la riguarda nel calendario giornaliero. Ti consigliamo di inserire la tua classe e il tuo cognome.</li>
+                        <li>Per rimuovere una parola chiave, reinseriscila o clicca sul bottone <i class="fa-solid fa-pen-to-square"></i>.</li>
+                        <li>Per pi&ugrave; informazioni, visita il <a href="./faq" class="link">FAQ</a>.</li>
+                    </ul>
+                </div>
+
+                <script>
+                    // show/hide keywords info
+                    $('#maggioriInfo').click(function () {
+                        $('#keywordsInfo').slideToggle(500);
+                    });
+                </script>
 
             </div>
         </div>
@@ -173,9 +189,9 @@
                     $(kw_del).remove();
                     $.ajax({
                         type: 'POST',
-                        url: '/keyword',
+                        url: '/user/keyword',
                         data: JSON.stringify({keyword: $(kw_del).text()}),
-                        success: function (data) { alert('data: ' + data); },
+                        success: function (data) { /*alert('data: ' + data);*/ },
                         error: function (error) {
                             console.warn(error);
                         },
@@ -253,6 +269,9 @@
         <!-- ON/OFF SETTINGS -->
         <div class="sub-section">
             <h2><i class="fa-solid fa-gear"></i> Impostazioni</h2>
+
+            <div class="impostazioni-container">
+
             <div class="invioNotificheContainer" id="canali">
                 <p style="padding-bottom: 10px"><i class="fa-solid fa-message primary-text"></i>
                     <span>Canali notifiche</span>
@@ -277,7 +296,161 @@
                 <% } %>
             </div>
 
-            <button class="btn filled submit-btn" onclick="loading(1); window.location.href='/logout'"><i class="fa-solid fa-sign-out"></i> Logout</button>
+            <div class="invioNotificheContainer" id="orario" style="position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--on-surface);">
+                <p style="padding-bottom: 10px; border-bottom: 1px solid var(--on-surface);"><i class="fa-solid fa-clock primary-text"></i>
+                    <span>Orario Daily Notification</span>
+                </p>
+
+                <div class="notTime" style="margin: 10px 0;">
+
+                    <div class="giorno">
+                        <label for="day">Giorno</label>
+                        <div class="flex-y-center">
+                            <select class="dashboard-select" name="notTime" disabled>
+                                <option id="m0" value="0">Alla mattina</option>
+                                <option id="m1" value="1">Il giorno prima</option> <!-- minus 1 -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="ora">
+                        <label>Ora</label>
+                        <div class="flex-y-center">
+                            <input name="notTime" type="text" id="timepicker" class="dashboard-input dashboard-time" disabled style="width: 75px;">
+                        </div>
+                    </div>
+
+                    <div class="dashboard-edit-btn-container">
+                        <div class="dashboard-toEdit-btns dashboard-toEdit-btns-notTime flex-y-center">
+                            <a class="btn text notTime-edit-btn" onclick="editNotTime()"><i class="fa-solid fa-pen"></i></a>
+                            <div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        </div>
+                        <div class="dashboard-editing-btns dashboard-editing-btns-notTime">
+                            <a class="btn text" onclick="stopEditNotTime()"><i class="fa-solid fa-xmark"></i></a>
+                            <a class="btn text" onclick="notTimeSubmit()"><i class="fa-solid fa-check"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="maggioriInfo-container">
+                    <p id="maggioriInfo-NotTime" class="maggioriInfo"><i class="fa-solid fa-circle-info"></i> <span style="text-decoration: underline; text-decoration-color: var(--on-surface-primary); cursor:pointer">Maggiori informazioni</span></p>
+                    <ul class="keywords-info" id="NotTimeInfo" style="display: none;">
+                        <li style="list-style: none; transform: translateX(-25px);">Scegli quando ricevere la Daily Notification:</li>
+                        <li><b>Alla mattina tra le 00:00 e le 08:10.</b> Le variazioni aggiunte in seguito verranno inviate come Last Minute se sono di quel giorno.</li>
+                        <li><b>Il giorno prima tra le 13:00 e le 23:55.</b> Le variazioni aggiunte in seguito verranno inviate come Last Minute se sono di quel giorno o del giorno successivo.</li>
+                    </ul>
+                </div>
+
+                <script>
+                    // show/hide keywords info
+                    $('#maggioriInfo-NotTime').click(function () {
+                        $('#NotTimeInfo').slideToggle(500);
+                    });
+                </script>
+                    
+                <script>
+                    // https://github.com/dmuy/MDTimePicker
+                    let time = moment(NOT_TIME, "HH:mm:ss").format("HH:mm");
+                        
+                        // if time < 8:00 then it's same day
+                    let day = time < "08:00" ? 0 : 1;
+                    
+                    $(document).ready(function() {
+
+                        document.getElementById("m" + day).selected = true; 
+
+                        if (day == 1) {
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '8:00', maxTime: '23:55' });
+                            mdtimepicker('#timepicker', 'setValue', time);
+                        }else{
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '08:10' });
+                            mdtimepicker('#timepicker', 'setValue', time);
+                        }
+                    });
+
+                    $('.notTime .dashboard-select').on('change', function(event) {
+                        let day_el = $("select[name='notTime']").val();
+                        if(day_el == 1){
+                            mdtimepicker('#timepicker', 'destroy');
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '13:00', maxTime: '23:55' });
+                            $("#timepicker").val("");
+                        }else{
+                            mdtimepicker('#timepicker', 'destroy');
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '08:10' });
+                            $("#timepicker").val("");
+                        }
+                        return false;
+                    });
+
+                    function editNotTime(){
+                        $("select[name='notTime']").prop("disabled", false);
+                        $("#timepicker").prop("disabled", false);
+                        $(".notTime-edit-btn").css("display", "none");
+                        $(".dashboard-editing-btns-notTime").css("display", "flex");
+                    }
+                    function stopEditNotTime(){
+                        $("select[name='notTime']").prop("disabled", true);
+                        $("#timepicker").prop("disabled", true);
+                        $(".notTime-edit-btn").css("display", "flex");
+                        $(".dashboard-editing-btns-notTime").css("display", "none");
+                        let day_el = $("select[name='notTime']").val();
+                        document.getElementById("m" + day_el).selected = true;
+                        if(day_el == 1){
+                            mdtimepicker('#timepicker', 'destroy');
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '13:00', maxTime: '23:55' });
+                            mdtimepicker('#timepicker', 'setValue', time);
+                        }else{
+                            mdtimepicker('#timepicker', 'destroy');
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '08:10' });
+                            mdtimepicker('#timepicker', 'setValue', time);
+                        }
+                    }
+                    function notTimeSubmit(){
+
+                        $(".dashboard-editing-btns-notTime").css("display", "none");
+                        $(".dashboard-toEdit-btns-notTime .lds-grid").css("display", "inline-block");
+
+                        let day_el = $("select[name='notTime']").val();
+                        let time_el = $("#timepicker").val();
+                        // check if time is valid
+                        if(time_el == "" || time_el == null || (day_el == 1 && time_el < "13:00") || (day_el == 0 && time_el > "08:00")){
+                            var alert = new AlertBanner("error", "Inserisci un orario valido.");
+                            alert.show();
+                            $("#timepicker").val(NOT_TIME.split(":").slice(0, 2).join(":"));
+                            $("select[name='notTime']").prop("disabled", true);
+                            $("#timepicker").prop("disabled", true);
+                            $(".dashboard-toEdit-btns-notTime .lds-grid").css("display", "none");
+                            $(".notTime-edit-btn").css("display", "flex");
+                            return;
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: '/user/notification-time',
+                            data: JSON.stringify({ time: time_el }),
+                            success: function (response) { 
+                                $("select[name='notTime']").prop("disabled", true);
+                                $("#timepicker").prop("disabled", true);
+                                
+                                $(".dashboard-toEdit-btns-notTime .lds-grid").css("display", "none");
+                                $(".notTime-edit-btn").css("display", "flex");
+                                
+                                NOT_TIME = time_el;
+                                time = moment(NOT_TIME, "HH:mm:ss").format("HH:mm");
+                            },
+                            error: function (error) {
+                                console.warn(error);
+                            },
+                            contentType: "application/json",
+                            dataType: 'json'
+                        });
+                    }
+                </script>
+
+            </div>
+
+            </div>
+
+            <button class="btn filled submit-btn my-10px" onclick="loading(1); window.location.href='/logout'"><i class="fa-solid fa-sign-out"></i> Logout</button>
 
             <script>
                 const submitPreferences = () => {
@@ -295,11 +468,12 @@
                     }
                     $.ajax({
                         type: 'POST',
-                        url: '/notification-preferences',
+                        url: '/user/notification-preferences',
                         data: JSON.stringify(preferences),
-                        success: function (data) { alert('data: ' + data); },
+                        success: function (data) { /*alert('data: ' + data);*/ },
                         error: function (error) {
                             console.warn(error);
+                            // todo err banner
                         },
                         contentType: "application/json",
                         dataType: 'json'
@@ -357,66 +531,69 @@
         <div class="sub-section info">
             <h2><i class="fa-solid fa-user"></i> Le tue info</h2>
             <!--form method="POST" action="/user/edit"-->
-            <div class="my-10px">
+
+            <div class="user-info-container">
+
+            <div>
                 <label>Nome</label>
                 <div class="flex-y-center">
-                    <input type="text" autocomplete="off" name="firstname" placeholder="<%= user_firstname %>" class="info-input" disabled required maxlength="50">
-                    <div class="info-edit-btn-container">
-                        <div class="info-toEdit-btns info-toEdit-btns-firstname flex-y-center" style="gap: 10px"">
+                    <input type="text" autocomplete="off" name="firstname" placeholder="<%= user_firstname %>" class="dashboard-input" disabled required maxlength="50">
+                    <div class="dashboard-edit-btn-container">
+                        <div class="dashboard-toEdit-btns dashboard-toEdit-btns-firstname flex-y-center" style="gap: 10px">
                             <a class="btn text info-edit-btn-firstname" onclick="editInfo('firstname')"><i class="fa-solid fa-pen"></i></a>
                             <div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                         </div>
-                        <div class="info-editing-btns info-editing-btns-firstname">
+                        <div class="dashboard-editing-btns dashboard-editing-btns-firstname">
                             <a class="btn text" onclick="stopEdit('firstname')"><i class="fa-solid fa-xmark"></i></a>
                             <a class="btn text" onclick="stopEdit('firstname')"><i class="fa-solid fa-check"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="my-10px">
+            <div>
                 <label>Cognome</label>
                 <div class="flex-y-center">
-                    <input type="text" autocomplete="off" name="lastname" placeholder="<%= user_lastname %>" class="info-input" disabled required maxlength="50">
-                    <div class="info-edit-btn-container">
-                        <div class="info-toEdit-btns info-toEdit-btns-lastname flex-y-center">
+                    <input type="text" autocomplete="off" name="lastname" placeholder="<%= user_lastname %>" class="dashboard-input" disabled required maxlength="50">
+                    <div class="dashboard-edit-btn-container">
+                        <div class="dashboard-toEdit-btns dashboard-toEdit-btns-lastname flex-y-center">
                             <a class="btn text info-edit-btn-lastname" onclick="editInfo('lastname')"><i class="fa-solid fa-pen"></i></a>
                             <div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                         </div>
-                        <div class="info-editing-btns info-editing-btns-lastname">
+                        <div class="dashboard-editing-btns dashboard-editing-btns-lastname">
                             <a class="btn text" onclick="stopEdit('lastname')"><i class="fa-solid fa-xmark"></i></a>
                             <a class="btn text" onclick="stopEdit('lastname')"><i class="fa-solid fa-check"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="my-10px gender">
+            <div>
                 <label for="Gender">Genere</label>
                 <div class="flex-y-center">
-                    <select class="info-gender-select" name="gender" disabled>
+                    <select class="dashboard-select" name="gender" disabled>
                         <option id="F" value="F">Donna (F)</option>
                         <option id="M" value="M">Uomo (M)</option>
                         <option id="X" value="X">Altro (ǝ)</option>
                     </select>
-                    <div class="info-edit-btn-container">
-                        <div class="info-toEdit-btns info-toEdit-btns-gender flex-y-center">
+                    <div class="dashboard-edit-btn-container">
+                        <div class="dashboard-toEdit-btns dashboard-toEdit-btns-gender flex-y-center">
                             <a class="btn text info-edit-btn-gender" onclick="editInfo('gender')"><i class="fa-solid fa-pen"></i></a>
                             <div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                         </div>
-                        <div class="info-editing-btns info-editing-btns-gender">
+                        <div class="dashboard-editing-btns dashboard-editing-btns-gender">
                             <a class="btn text" onclick="stopEdit('gender')"><i class="fa-solid fa-xmark"></i></a>
                             <a class="btn text" onclick="stopEdit('gender')"><i class="fa-solid fa-check"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="my-10px">
+            <div>
                 <label>Email</label>
                 <div class="flex-y-center">
-                    <input type="text" autocomplete="off" name="email" placeholder="<%= email %>" class="info-input" disabled required>
-                    <div class="info-edit-btn-container">
+                    <input type="text" autocomplete="off" name="email" placeholder="<%= email %>" class="dashboard-input" disabled required>
+                    <div class="dashboard-edit-btn-container">
                         <!--
                         <i class="fa-solid fa-pen info-edit-btn-email" onclick="editInfo('email')"></i>
-                        <div class="info-editing-btns info-editing-btns-email">
+                        <div class="dashboard-editing-btns dashboard-editing-btns-email">
                             <i class="fa-solid fa-xmark" onclick="stopEdit('email')"></i>
                             <button type="submit"><i class="fa-solid fa-check"></i></button>
                         </div>
@@ -425,45 +602,48 @@
                 </div>
             </div>
             <!--/form-->
+
+            </div>
+
         </div>
         <script>
             $(document).ready(function() {
-                $('.info-input').on('focus', function() {
+                $('.info .dashboard-input').on('focus', function() {
                     var placeholderValue = $(this).attr('placeholder');
                     if($(this).val() == ''){
                         $(this).val(placeholderValue);
                     }
-                    $(this).addClass('info-input-active');
+                    $(this).addClass('dashboard-input-active');
 
                     $('.info-edit-btn-' + $(this).attr('name')).css('display', 'none');
-                    $('.info-editing-btns-' + $(this).attr('name')).css('display', 'flex');
+                    $('.dashboard-editing-btns-' + $(this).attr('name')).css('display', 'flex');
                 });
-                $('.info-input').on('blur', function() {
+                $('.info .dashboard-input').on('blur', function() {
                     var inputValue = $(this).val();
                     if(inputValue == $(this).attr('placeholder')){
                         stopEdit($(this).attr('name'));
                     }else{
                         $(this).addClass('inserted');
                     }
-                    $(this).removeClass('info-input-active');
+                    $(this).removeClass('dashboard-input-active');
                 });
-                document.getElementsByClassName('info-gender-select')[0].onchange = (event) => {
-                    var selected = event.target.value;
-                    if(selected != USER_GENDER){
-                        $(".info-editing-btns-gender i.fa-check").attr("onclick","updateInfo('gender');");
-                        $(".info-gender-select").addClass("inserted");
-                    }else{
-                        $(".info-editing-btns-gender i.fa-check").attr("onclick", "stopEdit('gender');");
-                        $(".info-gender-select").removeClass("inserted");
+                $('.gender .dashboard-select').on('change', function(event) {
+                    var selected = $(event.target).val();
+                    if (selected != USER_GENDER) {
+                        $(".dashboard-editing-btns-gender i.fa-check").attr("onclick", "updateInfo('gender');");
+                        $(".dashboard-select").addClass("inserted");
+                    } else {
+                        $(".dashboard-editing-btns-gender i.fa-check").attr("onclick", "stopEdit('gender');");
+                        $(".dashboard-select").removeClass("inserted");
                     }
-                }
-                $('.info-input').on('input', function() {
+                });
+                $('.info .dashboard-input').on('input', function() {
                     var inputValue = $(this).val();
                     var placeholderValue = $(this).attr('placeholder');
                     if(inputValue != placeholderValue){
-                        $(".info-editing-btns-" + $(this).attr('name')).find("i.fa-check").attr("onclick", "updateInfo('" + $(this).attr('name') + "');");
+                        $(".dashboard-editing-btns-" + $(this).attr('name')).find("i.fa-check").attr("onclick", "updateInfo('" + $(this).attr('name') + "');");
                     }else{
-                        $(".info-editing-btns-" + $(this).attr('name')).find("i.fa-check").attr("onclick", "stopEdit('" + $(this).attr('name') + "');");
+                        $(".dashboard-editing-btns-" + $(this).attr('name')).find("i.fa-check").attr("onclick", "stopEdit('" + $(this).attr('name') + "');");
                     }
                 });
             });
@@ -473,7 +653,7 @@
                     $("select[name='gender']").prop("disabled", false);
                     $("select[name='gender']").focus();
                     $(".info-edit-btn-gender").css("display", "none");
-                    $(".info-editing-btns-gender").css("display", "flex");
+                    $(".dashboard-editing-btns-gender").css("display", "flex");
                     return;
                 }
                 $('input[name="' + name + '"]').prop("disabled", false);
@@ -482,20 +662,20 @@
 
             function stopEdit(name){
                 if(name == "gender"){
-                    document.getElementsByClassName('info-gender-select')[0].value = USER_GENDER;
-                    $(".info-editing-btns-gender").css("display", "none");
+                    $(".gender .dashboard-select").val(USER_GENDER);
+                    $(".dashboard-editing-btns-gender").css("display", "none");
                     $("select[name='gender']").prop("disabled", true);
                     $(".info-edit-btn-gender").css("display", "flex")
                     return;
                 }
                 $('input[name="' + name + '"]').val('');
                 $('.info-edit-btn-' + name).css('display', 'flex');
-                $('.info-editing-btns-' + name).css('display', 'none');
+                $('.dashboard-editing-btns-' + name).css('display', 'none');
                 $('input[name="' + name + '"]').prop("disabled", true);
                 $('input[name="' + name + '"]').removeClass('inserted');
             }
 
-            document.getElementsByClassName('info-gender-select')[0].value = USER_GENDER;
+            $(".gender .dashboard-select").val(USER_GENDER);
 
             // simulate java concurrent semaphore
             var isUpdating = false;
@@ -517,8 +697,8 @@
                     return;
                 }
                 stopEdit(name);
-                $(".info-toEdit-btns-" + name + " i.fa-pen").css("display", "none");
-                $(".info-toEdit-btns-" + name + " .lds-grid").css("display", "inline-block");
+                $(".dashboard-toEdit-btns-" + name + " i.fa-pen").css("display", "none");
+                $(".dashboard-toEdit-btns-" + name + " .lds-grid").css("display", "inline-block");
                 await waitUpdate();
                 isUpdating = true;
                 $.ajax({
@@ -529,7 +709,7 @@
                     },
                     success: function(response) {
                         if(name == "gender"){
-                            document.getElementsByClassName('info-gender-select')[0].value = inputUpdateValue;
+                            $(".gender .dashboard-select").val(inputUpdateValue);
                             USER_GENDER = inputUpdateValue;
                             writeUserGender();
                         }else{
@@ -538,8 +718,8 @@
                             else if(name == "lastname") USER_LASTNAME = inputUpdateValue;
                             writeUserName();
                         }
-                        $(".info-toEdit-btns-" + name + " i.fa-pen").css("display", "block");
-                        $(".info-toEdit-btns-" + name + " .lds-grid").css("display", "none");
+                        $(".dashboard-toEdit-btns-" + name + " i.fa-pen").css("display", "block");
+                        $(".dashboard-toEdit-btns-" + name + " .lds-grid").css("display", "none");
                         isUpdating = false;
                     },
                     error: function (error) {
@@ -547,11 +727,11 @@
                         div.id = "alertbanner";
                         div.className = "errorbanner showAlert";
                         div.setAttribute("onclick", "this.classList.remove('showAlert'); this.classList.add('hideAlert')");
-                        div.innerHTML = "<ul style=\"list-style: none; padding-left: 0;\"><li id=\"alertmessage\"><i class=\"fa-solid fa-circle-exclamation\"></i> (" + error.status +") Si è verificato un errore! Riprova più tardi.</li></ul>";
+                        div.innerHTML = "<ul style=\"list-style: none; padding-left: 0; margin:0;\"><li id=\"alertmessage\"><i class=\"fa-solid fa-circle-exclamation\"></i> " + error.responseJSON?.message || error.responseText || "Errore sconosciuto"; + "</li></ul>";
                         document.body.appendChild(div);
                         console.warn(error);
-                        $(".info-toEdit-btns-" + name + " i.fa-pen").css("display", "block");
-                        $(".info-toEdit-btns-" + name + " .lds-grid").css("display", "none");
+                        $(".dashboard-toEdit-btns-" + name + " i.fa-pen").css("display", "block");
+                        $(".dashboard-toEdit-btns-" + name + " .lds-grid").css("display", "none");
                         isUpdating = false;
                     },
                 });
@@ -773,12 +953,12 @@
 
             console.log(events);
 
-            const weekDay=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+            const weekDay=["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato", "Domenica"];
 
             const daysShown = 4; // 0 = today, 1 = tomorrow, 2 = day after tomorrow, 3 = day after day after tomorrow
 
             for (let i = 0; i < daysShown; i++) {
-                const html = `<span style='color: var(--on-surface-primary)'>${getDayDescription(i)}</span><span>${weekDay[moment().add(i, 'days').isoWeekday()]} ${moment().add(i, 'days').format("DD/MM/YYYY")}</span>`;
+                const html = `<span class='color: primary-text'>${getDayDescription(i)}</span><span>${weekDay[moment().add(i, 'days').isoWeekday()-1]} ${moment().add(i, 'days').format("DD/MM/YYYY")}</span>`;
                 $(`#events-${i}-date`).html(html);
             }
 
@@ -947,13 +1127,6 @@
                 }, {});
             });
         }
-    </script>
-
-    <script>
-        // show/hide keywords info
-        $('#maggioriInfo').click(function () {
-            $('#keywordsInfo').slideToggle(500);
-        });
     </script>
 
     <script>

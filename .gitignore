@@ -133,3 +133,5 @@ dist
 .DS_Store
 
 ssl/
+
+notes.txt

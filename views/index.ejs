@@ -235,7 +235,7 @@
 			} catch (error) {
 				console.error(error.stack);
 				// print error in the page
-				$("#noevents").append("<div class='error-container'><p class='errorText'><span class='errorTitle'>Errore nel caricamento degli eventi</span> <a class='errorRetry btn text' onclick='events()'><span class='material-symbols-outlined'>autorenew</span> <span>Riprova</span></a></p><p class='errorDescription'>[ " + error.stack + " ]<br><a class='link' href='mailto:master@ferminotify.me?subject=Errore caricamento eventi&body=Ciao,%0D%0AHo riscontrato questo errore durante il caricamento degli eventi%0D%0A%0D%0A" + error.stack + "%0D%0A%0D%0Acon le keywords:%0D%0A" + keywords + ".%0D%0A%0D%0A%0D%0A" + moment().format("HH:mm DD/MM/YYYY") + "' style='margin-left: 5px;'><i class='fa-solid fa-circle-exclamation'></i> Clicca qui per segnalare il problema</a><br>master@ferminotify.me</p></div>");
+				$("#noevents").append("<div class='error-container'><p class='errorText'><span class='errorTitle'>Errore nel caricamento degli eventi</span> <a class='errorRetry btn text' onclick='events()'><span class='material-symbols-outlined'>autorenew</span> <span>Riprova</span></a></p><p class='errorDescription'>[ " + error.stack + " ]<br><a class='link' href='mailto:mail@fn.lkev.in?subject=Errore caricamento eventi&body=Ciao,%0D%0AHo riscontrato questo errore durante il caricamento degli eventi%0D%0A%0D%0A" + error.stack + "%0D%0A%0D%0Acon le keywords:%0D%0A" + keywords + ".%0D%0A%0D%0A%0D%0A" + moment().format("HH:mm DD/MM/YYYY") + "' style='margin-left: 5px;'><i class='fa-solid fa-circle-exclamation'></i> Clicca qui per segnalare il problema</a><br>mail@fn.lkev.in</p></div>");
 				$("#noevents").show();
 				$("#events-loading").hide();
 			}

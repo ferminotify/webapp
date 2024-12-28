@@ -203,6 +203,7 @@ app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
     n_not: userInfo.notifications,
     user_gender: userInfo.gender,
     n_pref: userInfo.notification_preferences,
+    n_time: userInfo.notification_time,
     email: userInfo.email
   });
 });
@@ -428,7 +429,28 @@ app.post("/user/new-change-password", async (req, res) => { // PWD-CNG #3
 
 });
 
-app.post("/notification-preferences", async (req, res) => {
+app.post("/user/notification-time", async (req, res) => {
+
+  let time = req.body.time;
+
+  try{
+    await pool.query(
+    `UPDATE subscribers
+      SET notification_time = $1
+      WHERE email = $2;`,
+    [time, req.user.email]);
+
+    console.log("SUCCESS EDIT NOTIFICATION TIME " + req.user.email + ": " + time);
+    res.status(200).json({ message: "Modifiche applicate con successo!" });
+
+  } catch (error) {
+    console.log("ERR NOTIFICATION TIME " + req.user.email + ": " + error);
+    res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
+  }
+  
+});
+
+app.post("/user/notification-preferences", async (req, res) => {
   let option;
 
   // I use not true because sometimes value can be also None 
@@ -450,14 +472,15 @@ app.post("/notification-preferences", async (req, res) => {
     (err, results) => {
       if (err) {
         console.log("ERR NOTIFICATION PREF" + req.body.email + ": " + err);
+        res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
         throw err;
       }
     }
   );
-  res.redirect("/dashboard");
+  res.status(200).json({ message: "Modifiche applicate con successo!" });
 });
 
-app.post("/keyword", async function (req, res) {
+app.post("/user/keyword", async function (req, res) {
   /**
    * If the keyword has already been stored,
    * has to be removed.
@@ -488,6 +511,7 @@ app.post("/keyword", async function (req, res) {
       (err, results) => {
         if (err) {
           console.log("ERR DEL KW " + req.user.email + ": " + err);
+          res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
           throw err;
         }
       }
@@ -501,6 +525,7 @@ app.post("/keyword", async function (req, res) {
       (err, results) => {
         if (err) {
           console.log("ERR ADD KW " + req.user.email + ": " + err);
+          res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
           throw err;
         }
       }
@@ -511,7 +536,7 @@ app.post("/keyword", async function (req, res) {
 });
 
 app.post("/user/edit", async function (req, res) {
-  try { var email = req.user.email; } catch (error) { console.log("ERR EDIT: " + error); return res.redirect("/dashboard"); }
+  try { var email = req.user.email; } catch (error) { console.log("ERR EDIT: " + error); return res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." }); }
   var name = req.body.firstname || await getFirstNameByEmail(email);
   var surname = req.body.lastname || await getLastNameByEmail(email);
   var gender = req.body.gender !== undefined && req.body.gender.length === 1 ? req.body.gender : await getGenderByEmail(email);
@@ -521,8 +546,7 @@ app.post("/user/edit", async function (req, res) {
 
   if(name.length > 50 || surname.length > 50) {
     console.log("ERR EDIT " + email + ": name or surname too long");
-    req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
-    return res.redirect("/dashboard");
+    return res.status(400).json({ message: "Il nome o il cognome è troppo lungo!" });
   }
 
   try {
@@ -534,11 +558,10 @@ app.post("/user/edit", async function (req, res) {
     );
 
     console.log(`SUCCESS EDIT ${email}: new firstname = ${name}; new lastname = ${surname}; new gender = ${gender}`);
-    res.redirect("/dashboard");
+    return res.status(200).json({ message: "Modifiche salvate con successo!" });
   } catch (error) {
     console.log('ERR EDIT' + email + ": " + error);
-    req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
-    res.redirect("/dashboard");
+    return res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
   }
 });
 
