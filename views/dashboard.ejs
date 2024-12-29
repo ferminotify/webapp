@@ -30,7 +30,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dashboard di Fermi Notify.">
-    <meta propety="og:image" content="https://ferminotify.me/img/og-logo.png">
+    <meta propety="og:image" content="/img/og-logo.png">
     <meta property="og:description" content="Fermi Notify è un servizio non ufficiale dell'IS &quot;E. Fermi&quot; Mantova che invia delle notifiche per avvisare delle variazioni dell'orario del calendario giornaliero.">
     <meta property="og:title" content="Dashboard · Fermi Notify">
     <meta property="og:type" content="website">
@@ -910,7 +910,7 @@
                     printEvents(data);
                 } catch (error) {
                     // print error in the page
-                    $("#events").append("<div class='error-container' style='text-align: center'><p class='errorText'><span class='errorTitle'>Errore nel caricamento degli eventi</span> <a class='errorRetry btn text' onclick='events()'><span class='material-symbols-outlined'>autorenew</span> <span>Riprova</span></a></p><p class='errorDescription'>[ " + error.stack + " ]<br><a class='link' href='mailto:master@ferminotify.me?subject=Errore caricamento eventi&body=Ciao,%0D%0AHo riscontrato questo errore durante il caricamento degli eventi%0D%0A%0D%0A" + error.stack + "%0D%0A%0D%0Acon le keywords:%0D%0A" + keywords + ".%0D%0A%0D%0A%0D%0A" + moment().format("HH:mm DD/MM/YYYY") + "' style='margin-left: 5px;'> <i class='fa-solid fa-circle-exclamation'></i> Clicca qui per segnalare il problema</a><br>master@ferminotify.me</p></div>");
+                    $("#events").append("<div class='error-container' style='text-align: center'><p class='errorText'><span class='errorTitle'>Errore nel caricamento degli eventi</span> <a class='errorRetry btn text' onclick='events()'><span class='material-symbols-outlined'>autorenew</span> <span>Riprova</span></a></p><p class='errorDescription'>[ " + error.stack + " ]<br><a class='link' href='mailto:mail@fn.lkev.in?subject=Errore caricamento eventi&body=Ciao,%0D%0AHo riscontrato questo errore durante il caricamento degli eventi%0D%0A%0D%0A" + error.stack + "%0D%0A%0D%0Acon le keywords:%0D%0A" + keywords + ".%0D%0A%0D%0A%0D%0A" + moment().format("HH:mm DD/MM/YYYY") + "' style='margin-left: 5px;'> <i class='fa-solid fa-circle-exclamation'></i> Clicca qui per segnalare il problema</a><br>mail@fn.lkev.in</p></div>");
                     $("#events-loading").hide();
                 }
             })();
