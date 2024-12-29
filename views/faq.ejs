@@ -358,7 +358,7 @@
                     <p class="slider-card-icon"><i class="fa-solid fa-paper-plane"></i></p>
                     <div class="slider-card-text">
                         <h2>Daily Notification</h2>
-                        <p>Notifica delle 6:00 che racchiude gli eventi e le variazioni in programma</p>
+                        <p>Notifica che racchiude gli eventi e le variazioni in programma</p>
                     </div>
                 </div>
             </div>
@@ -531,10 +531,12 @@
             <div class="question">
                 <h3>4. Quando arrivano le notifiche?</h3>
                 <p class="answer">
-                    Nel caso in cui l'evento che ti riguarda venga pubblicato in qualsiasi momento prima del giorno stesso, ti arriver&agrave; una notifica che racchiude tutti gli eventi in programma alle <span class="primary-text">6:00</span> del giorno stesso.
+                    Nel caso in cui l'evento che ti riguarda venga pubblicato in qualsiasi momento prima del giorno stesso, ti arriver&agrave; una notifica <i>Daily Notification</i> che racchiude tutti gli eventi in programma.<br>
+                    Le Daily Notification vengono inviate di default alle <span class="primary-text">6:00</span> del giorno stesso delle variazioni dell'orario.<br>
+                    Puoi cambiare l'orario di invio delle Daily Notification nella <a href="/dashboard" class="link">Dashboard</a>. Maggiori informazioni nella sezione <a href="/faq?page=configurazione" class="link">Configurazione</a>.
                 </p>
                 <p class="answer answer-staccato">
-                    Nel caso in cui l'evento che ti riguarda venga pubblicato dopo le 6:00 (come una sostituzione dell'ultimo minuto), riceverai la notifica <span class="primary-text">all'istante</span>.
+                    Nel caso in cui l'evento che ti riguarda venga pubblicato la Daily Notification (come una sostituzione dell'ultimo minuto), riceverai la notifica <i>Last Minute Notification</i> <span class="primary-text">all'istante</span>.
                 </p>
             </div>
 
@@ -583,6 +585,20 @@
                 <h3>4. Come funziona la notifica tramite Telegram?</h3>
                 <p class="answer">
                     Per essere notificato su Telegram, invia il <span class="primary-text">codice</span> presente nella <a href="/dashboard#Telegram" class="link">Dashboard</a> al bot <a href="https://t.me/FermiNotifierBot" class="link">@FermiNotifierBot</a>.
+                </p>
+            </div>
+
+            <div class="question">
+                <h3>5. Come cambio l'orario di invio delle Daily Notification?</h3>
+                <p class="answer">
+                    La Daily Notification viene inviata di default alle <span class="primary-text">6:00</span> del giorno stesso delle variazioni dell'orario (es. <u>marted&igrave;</u> <i>Entrata posticipata</i> <i class="fa-solid fa-arrow-right"></i> notifica alle 6:00 di <u>marted&igrave;</u>).<br>
+                    Puoi cambiare l'orario di invio delle Daily Notification e impostarla nei seguenti modi:
+                    <ul style="line-height: 1.5em; ">
+                        <li style="margin: 10px 0">Alla <span class="primary-text">mattina</span> tra le <span class="primary-text">00:00</span> e le <span class="primary-text">8:10</span> in cui verranno raggruppati le tutte variazioni del giorno (es. <u>luned&igrave;</u> <i>Entrata posticipata</i>, <i>Riunione MyFermi</i> <i class="fa-solid fa-arrow-right"></i> notifica alle 6:30 di <u>luned&igrave;</u>);</li>
+                        <li style="margin: 10px 0">Il <span class="primary-text">giorno prima</span> tra le <span class="primary-text">13:00</span> e le <span class="primary-text">23:55</span> in cui verranno raggruppati le variazioni del giorno successivo (es. <u>luned&igrave;</u> <i>Entrata posticipata</i>, <i>Riunione MyFermi</i> <i class="fa-solid fa-arrow-right"></i> notifica alle 19:30 di <u>domenica</u>).</li>
+                    </ul>
+                    Tutte le variazioni aggiunte dopo l'orario specificato (negli esempi, dopo le 6:30 e le 19:30) verranno inviati come Last Minute Notification all'istante in cui vengono individuate nel calendario giornaliero.<br>
+                    Per cambiare l'orario di invio delle Daily Notification, vai nella <a href="/dashboard" class="link">Dashboard</a> e seleziona l'orario desiderato.
                 </p>
             </div>
         </div>
