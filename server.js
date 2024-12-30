@@ -203,6 +203,7 @@ app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
     n_not: userInfo.notifications,
     user_gender: userInfo.gender,
     n_pref: userInfo.notification_preferences,
+    n_day_before: userInfo.notification_day_before,
     n_time: userInfo.notification_time,
     email: userInfo.email
   });
@@ -432,15 +433,16 @@ app.post("/user/new-change-password", async (req, res) => { // PWD-CNG #3
 app.post("/user/notification-time", async (req, res) => {
 
   let time = req.body.time;
+  let day = req.body.day
 
   try{
     await pool.query(
     `UPDATE subscribers
-      SET notification_time = $1
-      WHERE email = $2;`,
-    [time, req.user.email]);
+      SET notification_time = $1, notification_day_before = $2
+      WHERE email = $3;`,
+    [time, day, req.user.email]);
 
-    console.log("SUCCESS EDIT NOTIFICATION TIME " + req.user.email + ": " + time);
+    console.log("SUCCESS EDIT NOTIFICATION TIME " + req.user.email + ": " + time + " - day before " + day);
     res.status(200).json({ message: "Modifiche applicate con successo!" });
 
   } catch (error) {

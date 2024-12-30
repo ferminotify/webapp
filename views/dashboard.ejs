@@ -73,6 +73,7 @@
         var USER_LASTNAME = "<%= user_lastname %>";
         var USER_GENDER = "<%= user_gender %>";
         var NOT_TIME = "<%= n_time %>";
+        var NOT_DAY_BEFORE = "<%= n_day_before %>";
         function writeUserName(){
             $(".user-name").html(USER_FIRSTNAME);
         }
@@ -353,15 +354,15 @@
                     // https://github.com/dmuy/MDTimePicker
                     let time = moment(NOT_TIME, "HH:mm:ss").format("HH:mm");
                         
-                        // if time < 8:00 then it's same day
-                    let day = time < "08:00" ? 0 : 1;
+                    // if NOT_DAY_BEFORE true then it's day before
+                    let day = NOT_DAY_BEFORE == "true" ? 1 : 0;
                     
                     $(document).ready(function() {
 
                         document.getElementById("m" + day).selected = true; 
 
                         if (day == 1) {
-                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '8:00', maxTime: '23:55' });
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '23:55' });
                             mdtimepicker('#timepicker', 'setValue', time);
                         }else{
                             mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '08:10' });
@@ -373,7 +374,7 @@
                         let day_el = $("select[name='notTime']").val();
                         if(day_el == 1){
                             mdtimepicker('#timepicker', 'destroy');
-                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '13:00', maxTime: '23:55' });
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '23:55' });
                             $("#timepicker").val("");
                         }else{
                             mdtimepicker('#timepicker', 'destroy');
@@ -398,7 +399,7 @@
                         document.getElementById("m" + day_el).selected = true;
                         if(day_el == 1){
                             mdtimepicker('#timepicker', 'destroy');
-                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '13:00', maxTime: '23:55' });
+                            mdtimepicker('#timepicker', { is24hour: true, theme: 'dark', clearBtn: false, minTime: '0:00', maxTime: '23:55' });
                             mdtimepicker('#timepicker', 'setValue', time);
                         }else{
                             mdtimepicker('#timepicker', 'destroy');
@@ -411,10 +412,10 @@
                         $(".dashboard-editing-btns-notTime").css("display", "none");
                         $(".dashboard-toEdit-btns-notTime .lds-grid").css("display", "inline-block");
 
-                        let day_el = $("select[name='notTime']").val();
+                        let day_before_el = true ? $("select[name='notTime']").val() == 1 : false;
                         let time_el = $("#timepicker").val();
                         // check if time is valid
-                        if(time_el == "" || time_el == null || (day_el == 1 && time_el < "13:00") || (day_el == 0 && time_el > "08:00")){
+                        if(time_el == "" || time_el == null || (!day_before_el && time_el > "08:10")){
                             var alert = new AlertBanner("error", "Inserisci un orario valido.");
                             alert.show();
                             $("#timepicker").val(NOT_TIME.split(":").slice(0, 2).join(":"));
@@ -427,7 +428,7 @@
                         $.ajax({
                             type: 'POST',
                             url: '/user/notification-time',
-                            data: JSON.stringify({ time: time_el }),
+                            data: JSON.stringify({ day: day_before_el, time: time_el }),
                             success: function (response) { 
                                 $("select[name='notTime']").prop("disabled", true);
                                 $("#timepicker").prop("disabled", true);

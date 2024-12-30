@@ -1,4 +1,4 @@
-/*!DO NOT REMOVE!
+/*
  * MDTimePicker 2.0.1 plugin
  * https://dmuy.github.io/MDTimePicker/
  *
@@ -3312,7 +3312,7 @@
 			  }, 'Ok'),
 			  btnCancel: hf.createElem('span', {
 				class: 'mdtp__button cancel'
-			  }, 'Cancel')
+			  }, 'Annulla')
 			}
 		  }
 		};
@@ -3428,7 +3428,7 @@
 		  var _hours = _.config.is24hour ? 24 : 12;
 		  for (var i = 0; i < _hours; i++) {
 			var value = i + 1,
-			  deg = (HOUR_START_DEG + i * HOUR_DEG_INCR) % END_DEG - (_.config.is24hour && value < 13 ? 15 : 0),
+			  deg = (HOUR_START_DEG + i * HOUR_DEG_INCR) % END_DEG/* - (_.config.is24hour && value > 12 ? 15 : 0)*/,
 			  is24 = value === 24,
 			  hour = hf.createElem('div', {
 				class: "mdtp__digit rotate-".concat(deg),
@@ -3436,7 +3436,7 @@
 			  }),
 			  hourInner = hf.createElem('span', null, is24 ? '00' : value);
 			hf.appendTo(hourInner, hour);
-			if (_.config.is24hour && value < 13) hour.classList.add('inner--digit');
+			if (_.config.is24hour && value > 12) hour.classList.add('inner--digit'); // EDITED
 			hf.addEvent(hourInner, 'click', function () {
 			  var _hour = parseInt(this.parentNode.dataset.hour),
 				_selectedT = _.selected.getPeriod(),
