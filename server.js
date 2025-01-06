@@ -126,7 +126,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
         pool.query(
           `INSERT INTO subscribers (name, surname, email, password, notifications, telegram, gender, notification_preferences)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING id, password`,
+            RETURNING id, unsub_token, notification_preferences, email`,
           [name, surname, email, hashedPassword, -1, telegramTemporaryCode, gender, 2],
           (err, results) => {
             if (err) {
@@ -140,7 +140,10 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
                 from: 'Fermi Notify Team <master@fn.lkev.in>',
                 to: email,
                 subject: `Conferma la registrazione`,
-                html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Ciao ${name}!</h2><tr><td style=text-align:left><p style=line-height:1.3>Per completare la registrazione, conferma il tuo indirizzo email:<tr><td style="padding:15px 0"><a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style="font-size:14px;letter-spacing:1.2px;padding:13px 17px;font-weight:600;background-color:#004a77;border-radius:10px;color:#fff;text-decoration:none"target=_blank>Conferma email</a><tr><td style=text-align:left><p style=line-height:1.3>Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo.<tr><td style=text-align:left><p style=line-height:1.3>A presto!</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Il bottone non funziona? Conferma l'email attraverso il seguente link: <a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style=color:#004a77 target=_blank>https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}</a>.<p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a <i>Fermi Notify</i>. Se non sei stato tu, ignora questa email.</table></main>`
+                html: `<!doctype html><html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Ciao ${name}!</h2><tr><td style=text-align:left><p style=line-height:1.3>Per completare la registrazione, conferma il tuo indirizzo email:<tr><td style="padding:15px 0"><a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style="font-size:14px;letter-spacing:1.2px;padding:13px 17px;font-weight:600;background-color:#004a77;border-radius:10px;color:#fff;text-decoration:none"target=_blank>Conferma email</a><tr><td style=text-align:left><p style=line-height:1.3>Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo.<tr><td style=text-align:left><p style=line-height:1.3>A presto!</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Il bottone non funziona? Conferma l'email attraverso il seguente link: <a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style=color:#004a77 target=_blank>https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}</a>.<p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px alt="Fermi Notify"></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a <i>Fermi Notify</i>. Se non sei stato tu, ignora questa email.</table></main><html>`,
+                headers: {
+                  "List-Unsubscribe": `<mailto:unsubscribe@fn.lkev.in?subject=Unsubscribe%20%3A%28&id=${results.rows[0].id}&token=${results.rows[0].unsub_token}&email=${results.rows[0].email}>, <https://fn.lkev.in/user/unsubscribe?id=${results.rows[0].id}&token=${results.rows[0].unsub_token}&email=${results.rows[0].email}>`
+                },
               };
               
               transporter.sendMail(mailOptions, (error, info) => {
@@ -231,12 +234,18 @@ app.get("/users/register/confirmation/:id", async (req, res, next) => {
   let gender = await getGenderByEmail(email);
   let name = await getFirstNameByEmail(email);
 
+  let unsub_info = await getUnsubscribeInfoByEmail(email);
+
   // send welcome email
   const mailOptions = {
     from: 'Fermi Notify Team <master@fn.lkev.in>',
     to: email,
     subject: `Welcome!`,
-    html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Benvenut${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify!</h2><tr><td style=text-align:left><h4 style=margin-bottom:0>Ciao ${name}!</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Grazie per esserti registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"}, di seguito ci sono alcune indicazioni sul funzionamento di Fermi Notify.<h4 style=margin-bottom:0>Keyword</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a> potrai inserire le tue <b>keyword</b>, necessarie per trovare le variazioni dell'orario che ti riguardano. Ti invitiamo ad aggiungere le parole che riconducono a te (il tuo cognome, la tua classe, i tuoi corsi, ecc...).<br>Presta attenzione alla <b>formattazione</b> delle keywords, dev'essere uguale a quella scritta nel calendario giornaliero (es. <i>4CIIN</i>, non "4 CIIN" o "4CIN")!<h4 style=margin-bottom:0>Notifiche</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Vengono inviate notifiche sulle variazioni che contengono le tue keyword tramite email e/o Telegram. Puoi modificare le preferenze sulle notifiche nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a>.<ul style=padding-top:0;line-height:1.3;margin-top:0><li>Se c'è una variazione dell'orario, riceverai una notifica che riassume tutte le variazioni della giornata alle <b>6 del giorno stesso</b>.<li>Se viene pubblicata una variazione dell'orario poche ore prima che si verifichi (es. sostituzione dell'ultimo minuto), verrai notificat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} <b>all'istante</b>.</ul><p style=margin-top:10px;margin-bottom:10px>Per maggiori informazioni, visita la <a href=https://fn.lkev.in/faq style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>FAQ</a>.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify. Puoi disattivare o modificare le preferenze sulle notifiche <a href="https://fn.lkev.in/dashboard?s=canali"style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>qui</a>.</table></main>`
+    html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Benvenut${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify!</h2><tr><td style=text-align:left><h4 style=margin-bottom:0>Ciao ${name}!</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Grazie per esserti registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"}, di seguito ci sono alcune indicazioni sul funzionamento di Fermi Notify.<h4 style=margin-bottom:0>Keyword</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a> potrai inserire le tue <b>keyword</b>, necessarie per trovare le variazioni dell'orario che ti riguardano. Ti invitiamo ad aggiungere le parole che riconducono a te (il tuo cognome, la tua classe, i tuoi corsi, ecc...).<br>Presta attenzione alla <b>formattazione</b> delle keywords, dev'essere uguale a quella scritta nel calendario giornaliero (es. <i>4CIIN</i>, non "4 CIIN" o "4CIN")!<h4 style=margin-bottom:0>Notifiche</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Vengono inviate notifiche sulle variazioni che contengono le tue keyword tramite email e/o Telegram. Puoi modificare le preferenze sulle notifiche nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a>.<ul style=padding-top:0;line-height:1.3;margin-top:0><li>Se c'è una variazione dell'orario, riceverai una notifica che riassume tutte le variazioni della giornata alle <b>6 del giorno stesso</b>.<li>Se viene pubblicata una variazione dell'orario poche ore prima che si verifichi (es. sostituzione dell'ultimo minuto), verrai notificat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} <b>all'istante</b>.</ul><p style=margin-top:10px;margin-bottom:10px>Per maggiori informazioni, visita la <a href=https://fn.lkev.in/faq style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>FAQ</a>.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px alt="Fermi Notify"></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify. Puoi disattivare le notifiche via mail <a href="https://fn.lkev.in/user/unsubscribe?id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${email}" style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>qui</a>.</table></main>`,
+    headers: {
+      "List-Unsubscribe": `<mailto:unsubscribe@fn.lkev.in?subject=Unsubscribe%20%3A%28&id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${email}>, <https://fn.lkev.in/user/unsubscribe?id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${email}>`
+    },
+    text: `Ciao ${name}! Benvenuto a Fermi Notify! Per completare la registrazione, conferma il tuo indirizzo email: https://fn.lkev.in/users/register/confirmation/${userId}. Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo. A presto!`
   };
   
   transporter.sendMail(mailOptions, (error, info) => {
@@ -300,6 +309,8 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
   let name = await getFirstNameByEmail(user_email);
 
   const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 char long
+
+  let unsub_info = await getUnsubscribeInfoByEmail(user_email);
   
   pool.query(
     `UPDATE subscribers
@@ -318,7 +329,11 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
         from: 'Fermi Notify Team <master@fn.lkev.in>',
         to: user_email,
         subject: `Codice di sicurezza OTP [${randomCode}]`,
-        html: `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"border=0 cellpadding=0 cellspacing=0 width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src="https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png" style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"border=0 cellpadding=0 cellspacing=0><tr><td><h2 style="margin:10px 0">Il tuo codice di sicurezza</h2><tr><td style=text-align:left><p style=margin-bottom:0>Ciao ${name},<p style=line-height:1.3;margin-top:10px;margin-bottom:10px>il tuo <b>codice di sicurezza OTP</b> è:<table style="margin-left:auto;margin-right:auto;padding:5px 0;text-align:center;border-radius:10px"><tr><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[0]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[1]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[2]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[3]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[4]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[5]}</h1></table><tr><td style=font-size:13px;text-align:center><p style=margin-bottom:15px>Il codice scadrà tra <b>15 minuti</b>.<br>Ti inviamo questo codice perché hai richiesto di cambiare la password del tuo account. Se non hai richiesto di cambiare la password, puoi ignorare questa email.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src="https://fn.lkev.in/email/v3/icon-allmuted.png" style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrato a Fermi Notify. Puoi disattivare o modificare le preferenze sulle notifiche <a href="https://fn.lkev.in/dashboard?s=canali"style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>qui</a>.</table></main>`
+        html: `<!doctype html><html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"border=0 cellpadding=0 cellspacing=0 width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src="https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png" style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"border=0 cellpadding=0 cellspacing=0><tr><td><h2 style="margin:10px 0">Il tuo codice di sicurezza</h2><tr><td style=text-align:left><p style=margin-bottom:0>Ciao ${name},<p style=line-height:1.3;margin-top:10px;margin-bottom:10px>il tuo <b>codice di sicurezza OTP</b> è:<table style="margin-left:auto;margin-right:auto;padding:5px 0;text-align:center;border-radius:10px"><tr><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[0]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[1]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[2]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[3]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[4]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[5]}</h1></table><tr><td style=font-size:13px;text-align:center><p style=margin-bottom:15px>Il codice scadrà tra <b>15 minuti</b>.<br>Ti inviamo questo codice perché hai richiesto di cambiare la password del tuo account. Se non hai richiesto di cambiare la password, puoi ignorare questa email.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src="https://fn.lkev.in/email/v3/icon-allmuted.png" style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrato a Fermi Notify. Puoi disattivare le notifiche via mail <a href="https://fn.lkev.in/user/unsubscribe?id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${user_email}" style=color:#004a77>qui</a>.</table></main><html>`,
+        headers: {
+          "List-Unsubscribe": `<mailto:unsubscribe@fn.lkev.in?subject=Unsubscribe%20%3A%28&id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${email}>, <https://fn.lkev.in/user/unsubscribe?id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${email}>`
+        },
+        text: `Il tuo codice di sicurezza OTP è: ${randomCode}. Il codice scadrà tra 15 minuti. Ti inviamo questo codice perché hai richiesto di cambiare la password del tuo account. Se non hai richiesto di cambiare la password, puoi ignorare questa email.`
       };
       
       transporter.sendMail(mailOptions, (error, info) => {
@@ -569,13 +584,88 @@ app.post("/user/edit", async function (req, res) {
   }
 });
 
+app.get("/user/unsubscribe", async (req, res) => {
+  // get email, id and token
+  let email = req.query.email;
+  let id = req.query.id;
+  let token = req.query.token;
+
+  // get user info
+  let userInfo = await getUnsubscribeInfoByEmail(email);
+  if(userInfo == null){
+    console.log("ERR UNSUBSCRIBE " + email + ": user not found");
+    req.flash("error_msg", "Utente non trovato!");
+    return res.redirect("/login");
+  }
+
+  // check if id and token are correct
+  if(userInfo.id != id || userInfo.unsub_token != token){
+    console.log("ERR UNSUBSCRIBE " + email + ": id or token not valid");
+    req.flash("error_msg", "ID o token non valido!");
+    return res.redirect("/login");
+  }
+
+  if(userInfo.notification_preferences == 0){
+    console.log("ERR UNSUBSCRIBE " + email + ": already unsubscribed");
+    return res.redirect("/login");
+  }
+
+  // update notification preferences
+  if(userInfo.notification_preferences == 2){
+    pool.query(
+      `UPDATE subscribers
+        SET notification_preferences = 0
+        WHERE email = $1`,
+      [email],
+      (err, results) => {
+        if (err) {
+          console.log("ERR UNSUBSCRIBE " + email + ": " + err);
+          req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+          return res.redirect("/login");
+        }
+      }
+    );
+  } else if(userInfo.notification_preferences == 3){
+    pool.query(
+      `UPDATE subscribers
+        SET notification_preferences = 1
+        WHERE email = $1`,
+      [email],
+      (err, results) => {
+        if (err) {
+          console.log("ERR UNSUBSCRIBE " + email + ": " + err);
+          req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+          return res.redirect("/login");
+        }
+      }
+    );
+  }
+
+  console.log("SUCCESS UNSUBSCRIBE " + email);
+  req.flash("success_msg", "Disiscrizione dalle email effettuata con successo!");
+  return res.redirect("/");
+});
+
 // get domain status
 app.get("/status", async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.send("OK👍");
 });
 
-// user user instead of email so that it does not have to pass user.email which may result in undefined error
+// get unsubscribe from email info
+async function getUnsubscribeInfoByEmail(email){
+  try {
+    const RES = await pool.query(
+      `SELECT id, unsub_token, notification_preferences FROM subscribers
+        WHERE email = '${email}'`,
+    )
+    return RES.rows[0];
+  } catch (err) {
+    return null;
+  }
+}
+
+// user instead of email so that it does not have to pass user.email which may result in undefined error
 async function getFirstNameByUser(user){
   if(!user) return null;
   try {
