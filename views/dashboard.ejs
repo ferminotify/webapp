@@ -378,7 +378,7 @@
                         $("#timepicker").prop("disabled", true);
                         $(".notTime-edit-btn").css("display", "flex");
                         $(".dashboard-editing-btns-notTime").css("display", "none");
-                        let day_el = $("select[name='notTime']").val();
+                        let day_el = NOT_DAY_BEFORE == "true" ? 1 : 0;
                         document.getElementById("m" + day_el).selected = true;
                         if(day_el == 1){
                             mdtimepicker('#timepicker', 'destroy');

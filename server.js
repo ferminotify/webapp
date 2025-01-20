@@ -57,7 +57,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// log from which domain the req is coming from
+/* log from which domain the req is coming from
 app.use((req, res, next) => {
   const ext = path.extname(req.originalUrl);
   if (req.method === 'GET' && !ext && req.originalUrl !== '/health' && req.originalUrl !== '/status') {
@@ -66,6 +66,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+*/
 
 app.get("/", async (req, res) => {
   res.render("index.ejs", { isLogged: req.isAuthenticated() });
@@ -175,6 +176,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
 
 });
 
+// GET LOGIN
 app.get("/login", checkAuthenticated, (req, res) => {
   // flash sets a messages variable. passport sets the error message
   if (req.session.flash != undefined && req.session.flash.error != undefined){
@@ -184,14 +186,30 @@ app.get("/login", checkAuthenticated, (req, res) => {
   }
   res.render("login.ejs", { isLogged: false });
 });
+
+// POST LOGIN
+// Middleware to save the returnTo URL before authentication
+function saveReturnTo(req, res, next) {
+  if (req.session.returnTo) {
+    res.locals.returnTo = req.session.returnTo; // Store it temporarily in `res.locals`
+  }
+  next();
+}
 app.post(
   "/login",
+  saveReturnTo,
   passport.authenticate("local", {
-    successRedirect: "/dashboard",
     failureRedirect: "/login",
-    failureFlash: true
-  })
+    failureFlash: true,
+  }),
+  (req, res) => {
+    // Retrieve the saved returnTo URL or default to /dashboard
+    const redirectUrl = res.locals.returnTo || "/dashboard";
+    delete req.session.returnTo; // Clean up the session
+    res.redirect(redirectUrl);
+  }
 );
+
 
 app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
 
@@ -757,10 +775,14 @@ function checkAuthenticated(req, res, next) {
 }
 
 function checkNotAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+  if (!req.isAuthenticated()) {
+    // User is NOT authenticated, save the intended URL and redirect to login
+    const url = new URL(req.originalUrl, `http://${req.headers.host}`);
+    req.session.returnTo = url.href;
+    return res.redirect("/login");
   }
-  res.redirect("/login");
+  // User is authenticated, proceed to the next middleware or route
+  next();
 }
 
 async function getUserEmailWithTelegramID(telegramId) {
