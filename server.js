@@ -61,7 +61,7 @@ app.use((req, res, next) => {
   const ext = path.extname(req.originalUrl);
   if (req.method === 'GET' && !ext && req.originalUrl !== '/health' && req.originalUrl !== '/status') {
     console.log("[" + req.get('host') + "] GET " + req.originalUrl);
-    DBLog(req.get('host'));
+    if(req.hostname != 'localhost') DBLog(req.get('host'));
   }
   next();
 });

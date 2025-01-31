@@ -4,7 +4,7 @@ const { pool } = require('./dbConfig');
 const DBLog = async (domain) => {
 	try {
 	const result = await pool.query(
-	  'UPDATE webapp_stats SET count = count + 1 WHERE domain = $1',
+	  'INSERT INTO webapp_stats (timestamp, domain) VALUES (NOW(), $1)',
 	  [domain]
 	);
 	return result.rows;
