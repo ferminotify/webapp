@@ -1,6 +1,6 @@
 const express = require("express");
 const { pool } = require("./dbConfig");
-const { DBLog } = require("./logger");
+const { DBLog, DBLogError } = require("./logger");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const flash = require("express-flash");
@@ -57,16 +57,23 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/* log from which domain the req is coming from
 app.use((req, res, next) => {
   const ext = path.extname(req.originalUrl);
   if (req.method === 'GET' && !ext && req.originalUrl !== '/health' && req.originalUrl !== '/status') {
     console.log("[" + req.get('host') + "] GET " + req.originalUrl);
-    DBLog(req.get('host'), 'GET', req.originalUrl);
+    DBLog(req.get('host'));
   }
   next();
 });
-*/
+
+const printConsoleError = console.error;
+console.error = async function (...args) {
+  // Send error message to DB
+  const errorMessage = args.join(' ');
+  DBLogError(errorMessage);
+  // Print the error to the console
+  printConsoleError.apply(console, args);
+};
 
 app.get("/", async (req, res) => {
   res.render("index.ejs", { isLogged: req.isAuthenticated() });
@@ -117,7 +124,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
     [email],
     (err, results) => {
       if (err) {
-        console.log("ERR REGISTER " + email + ": " + err);
+        console.error("ERR REGISTER [1] " + email + ": " + err);
       }
 
       if (results.rows.length > 0) {
@@ -131,6 +138,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
           [name, surname, email, hashedPassword, -1, telegramTemporaryCode, gender, 2],
           (err, results) => {
             if (err) {
+              console.error("ERR REGISTER [2] " + email + ": " + err);
               req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${err.message})`);
             } else {
               // success db insert
@@ -149,11 +157,14 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
               
               transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
-                  console.log("ERR REGISTER SENDMAIL " + email + ": " + error);
+                  console.error("ERR REGISTER [3] " + email + ": " + error);
                   
                   // delete record from db
                   pool.query(`DELETE FROM subscribers WHERE id = $1`, [results.rows[0].id], (err, results) => {
-                    if (err) req.flash("error_msg", `Si è verificato un errore! Eliminazione record dal database non riuscita. Per favore, contattaci su Instagram @ferminotify.`);
+                    if (err){
+                      req.flash("error_msg", `Si è verificato un errore! Eliminazione record dal database non riuscita. Per favore, contattaci su Instagram @ferminotify.`);
+                      console.error("ERR REGISTER [3.1] " + email + ": " + err);
+                    }
                     res.redirect("/login");
                     return;
                   });
@@ -180,7 +191,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
 app.get("/login", checkAuthenticated, (req, res) => {
   // flash sets a messages variable. passport sets the error message
   if (req.session.flash != undefined && req.session.flash.error != undefined){
-    console.log("ERR LOG IN: " + req.session.flash.error);
+    console.error("ERR LOG IN: " + req.session.flash.error);
     // temp fix TODO
     req.flash("error_msg", req.session.flash.error);
   }
@@ -240,7 +251,7 @@ app.get("/users/register/confirmation/:id", async (req, res, next) => {
 
   if(email == undefined){
     req.flash("error_msg", "Link di conferma non valido!");
-    console.log("ERR CONFIRMATION " + userId + ": email not found");
+    console.error("ERR CONFIRMATION " + userId + ": email not found");
     return res.redirect("/login");
   }
 
@@ -268,7 +279,7 @@ app.get("/users/register/confirmation/:id", async (req, res, next) => {
   
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log("ERR WELCOME SENDMAIL " + email + ": " + error);
+      console.error("ERR WELCOME " + email + ": " + error);
       req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${error.message})`);
       res.redirect("/login");
       return;
@@ -338,7 +349,7 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
     (err, result) => {
       if (err) {
         req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
-        console.log("ERR REQ CHANGE PSW QUERY " + user_email + ": " + err);
+        console.error("ERR REQ CHANGE PSW QUERY " + user_email + ": " + err);
         res.redirect("/password_reset");
         return;
       }
@@ -353,7 +364,7 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
       
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log("ERR REQ CHANGE PSW SENDMAIL " + user_email + ": " + error);
+          console.error("ERR REQ CHANGE PSW SENDMAIL " + user_email + ": " + error);
           req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
           res.redirect("/password_reset");
         } else {
@@ -380,7 +391,7 @@ app.post("/user/otp-change-password", async (req, res) => { // PWD-CNG #2
     [user_email],
     async (err, results) => {
       if (err) {
-        console.log("ERR OTP CHANGE PSW " + user_email + " " + random_code + ": " + err);
+        console.error("ERR OTP CHANGE PSW " + user_email + " " + random_code + ": " + err);
       }
 
       let codeGenerationTimestamp = results.rows[0].secret_temp_timestamp;      
@@ -393,7 +404,7 @@ app.post("/user/otp-change-password", async (req, res) => { // PWD-CNG #2
 
       if (timeDifference > fifteenMinutesInMilliseconds) {
         req.flash("error_msg", "Il codice OTP è scaduto!");
-        console.log("ERR OTP CHANGE PSW EXPIRED " + user_email + "; input: " + random_code + "; random_code: " + results.rows[0].secret_temp);
+        console.error("ERR OTP CHANGE PSW EXPIRED " + user_email + "; input: " + random_code + "; random_code: " + results.rows[0].secret_temp);
         res.redirect("/password_reset");
         return;
       }
@@ -405,7 +416,7 @@ app.post("/user/otp-change-password", async (req, res) => { // PWD-CNG #2
           user_email: user_email
         });
       } else {
-        console.log("WARN OTP CHANGE PSW NOT CORRECT " + user_email + "; input: " + random_code + "; random_code: " + results.rows[0].secret_temp);
+        console.warn("WARN OTP CHANGE PSW NOT CORRECT " + user_email + "; input: " + random_code + "; random_code: " + results.rows[0].secret_temp);
         errors.push({ message: "Il codice OTP non corrisponde!" });
         res.render("password_otp.ejs", { errors, user_email, isLogged : false});
       }
@@ -419,8 +430,8 @@ app.post("/user/new-change-password", async (req, res) => { // PWD-CNG #3
   let errors = [];
   
   if(!await userEmailMatchesOTP(user_email, random_code)){
-    console.error("ERR NEW PASSWORD " + user_email + ": OTP not valid");
-    errors.push({ message: "Si è verificato un errore! Riprova più tardi." });
+    console.warn("WARN NEW PASSWORD " + user_email + ": OTP not valid");
+    errors.push({ message: "Il codice OTP è corretto." });
     res.render("password_otp.ejs", { errors, user_email, isLogged : false});
     return;
   }
@@ -449,7 +460,7 @@ app.post("/user/new-change-password", async (req, res) => { // PWD-CNG #3
     (err, results) => {
       if (err) {
         errors.push({ message: "Si è verificato un errore! Riprova più tardi." });
-        console.log("ERR NEW PASSWORD " + user_email + ": " + err);
+        console.error("ERR NEW PASSWORD " + user_email + ": " + err);
         req.flash("error_msg", errors);
         res.redirect("/password_reset");
       }else{
@@ -478,7 +489,7 @@ app.post("/user/notification-time", async (req, res) => {
     res.status(200).json({ message: "Modifiche applicate con successo!" });
 
   } catch (error) {
-    console.log("ERR NOTIFICATION TIME " + req.user.email + ": " + error);
+    console.error("ERR NOTIFICATION TIME " + req.user.email + ": " + error);
     res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
   }
   
@@ -505,7 +516,7 @@ app.post("/user/notification-preferences", async (req, res) => {
     [option, req.user.email],
     (err, results) => {
       if (err) {
-        console.log("ERR NOTIFICATION PREF" + req.body.email + ": " + err);
+        console.error("ERR NOTIFICATION PREF" + req.body.email + ": " + err);
         res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
         throw err;
       }
@@ -544,7 +555,7 @@ app.post("/user/keyword", async function (req, res) {
       [sentKeyword, req.user.email],
       (err, results) => {
         if (err) {
-          console.log("ERR DEL KW " + req.user.email + ": " + err);
+          console.error("ERR DEL KW " + req.user.email + ": " + err);
           res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
           throw err;
         }
@@ -558,7 +569,7 @@ app.post("/user/keyword", async function (req, res) {
       [sentKeyword, req.user.email],
       (err, results) => {
         if (err) {
-          console.log("ERR ADD KW " + req.user.email + ": " + err);
+          console.error("ERR ADD KW " + req.user.email + ": " + err);
           res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
           throw err;
         }
@@ -570,7 +581,7 @@ app.post("/user/keyword", async function (req, res) {
 });
 
 app.post("/user/edit", async function (req, res) {
-  try { var email = req.user.email; } catch (error) { console.log("ERR EDIT: " + error); return res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." }); }
+  try { var email = req.user.email; } catch (error) { console.error("ERR EDIT: " + error); return res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." }); }
   var name = req.body.firstname || await getFirstNameByEmail(email);
   var surname = req.body.lastname || await getLastNameByEmail(email);
   var gender = req.body.gender !== undefined && req.body.gender.length === 1 ? req.body.gender : await getGenderByEmail(email);
@@ -579,7 +590,7 @@ app.post("/user/edit", async function (req, res) {
   surname = surname.trim();
 
   if(name.length > 50 || surname.length > 50) {
-    console.log("ERR EDIT " + email + ": name or surname too long");
+    console.warn("WARN EDIT " + email + ": name or surname too long");
     return res.status(400).json({ message: "Il nome o il cognome è troppo lungo!" });
   }
 
@@ -594,7 +605,7 @@ app.post("/user/edit", async function (req, res) {
     console.log(`SUCCESS EDIT ${email}: new firstname = ${name}; new lastname = ${surname}; new gender = ${gender}`);
     return res.status(200).json({ message: "Modifiche salvate con successo!" });
   } catch (error) {
-    console.log('ERR EDIT' + email + ": " + error);
+    console.error('ERR EDIT' + email + ": " + error);
     return res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
   }
 });
@@ -608,20 +619,20 @@ app.get("/user/unsubscribe", async (req, res) => {
   // get user info
   let userInfo = await getUnsubscribeInfoByEmail(email);
   if(userInfo == null){
-    console.log("ERR UNSUBSCRIBE " + email + ": user not found");
+    console.warn("WARN UNSUBSCRIBE " + email + ": user not found");
     req.flash("error_msg", "Utente non trovato!");
     return res.redirect("/login");
   }
 
   // check if id and token are correct
   if(userInfo.id != id || userInfo.unsub_token != token){
-    console.log("ERR UNSUBSCRIBE " + email + ": id or token not valid");
+    console.warn("WARN UNSUBSCRIBE " + email + ": id or token not valid");
     req.flash("error_msg", "ID o token non valido!");
     return res.redirect("/login");
   }
 
   if(userInfo.notification_preferences == 0){
-    console.log("ERR UNSUBSCRIBE " + email + ": already unsubscribed");
+    console.warn("WARN UNSUBSCRIBE " + email + ": already unsubscribed");
     return res.redirect("/login");
   }
 
@@ -634,7 +645,7 @@ app.get("/user/unsubscribe", async (req, res) => {
       [email],
       (err, results) => {
         if (err) {
-          console.log("ERR UNSUBSCRIBE " + email + ": " + err);
+          console.error("ERR UNSUBSCRIBE [1] " + email + ": " + err);
           req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
           return res.redirect("/login");
         }
@@ -648,7 +659,7 @@ app.get("/user/unsubscribe", async (req, res) => {
       [email],
       (err, results) => {
         if (err) {
-          console.log("ERR UNSUBSCRIBE " + email + ": " + err);
+          console.error("ERR UNSUBSCRIBE [2] " + email + ": " + err);
           req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
           return res.redirect("/login");
         }
@@ -726,7 +737,7 @@ async function getGenderByEmail(email){
     );
     return RES.rows[0].gender;
   } catch (err) {
-    console.log("ERR GET USER GENDER BY EMAIL " + email + ": " + err.stack);
+    console.error("ERR GET USER GENDER BY EMAIL " + email + ": " + err.stack);
   }
 }
 
@@ -793,7 +804,7 @@ async function getUserEmailWithTelegramID(telegramId) {
     );
     return RES.rows[0].email;
   } catch (err) {
-    console.log("ERR GET EMAIL WITH TG ID " + telegramId + ": " + err.stack);
+    console.error("ERR GET EMAIL WITH TG ID " + telegramId + ": " + err.stack);
   }
 }
 
@@ -805,7 +816,7 @@ async function getNumberNotification(email){
     );
     return RES.rows[0].notifications;
   } catch (err) {
-    console.log("ERR GET NUMBER NOTIFICATIONS " + email + ": " + err.stack);
+    console.error("ERR GET NUMBER NOTIFICATIONS " + email + ": " + err.stack);
   }
 }
 
@@ -819,7 +830,7 @@ async function incrementNumberNotification(telegramId){
     console.log("SUCCESS CONFIRMATION TG ID: " + telegramId);
     return RES;
   } catch (err) {
-    console.log("ERR ADD NOTIFICATIONS " + telegramId + ": " + err.stack);
+    console.error("ERR ADD NOTIFICATIONS " + telegramId + ": " + err.stack);
   }
 }
 
@@ -862,7 +873,7 @@ async function getAllTelegram() {
     );
     return RES.rows[0].telegram;
   } catch (err) {
-    console.log(err.stack);
+    console.error(err.stack);
   }
 }
 
@@ -874,7 +885,7 @@ async function getUserKeywordsByEmail(user_email){
     );
     return RES.rows[0].tags;
   } catch (err) {
-    console.log("ERR GET KW " + user_email + ": " + err.stack);
+    console.error("ERR GET KW " + user_email + ": " + err.stack);
   }
 }
 
