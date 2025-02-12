@@ -209,7 +209,7 @@ p.main-subtitle5::after {
 }
 
 
-.domain, .domain *{
+.domain, .domain *, .service, .service *{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -229,6 +229,9 @@ p.main-subtitle5::after {
 }
 .dot.verifying{
     background-color: rgb(221, 161, 0);
+}
+.dot.idle{
+    background-color: rgb(173, 216, 230);
 }
 .dot.na{
     background-color: rgb(121, 121, 121);

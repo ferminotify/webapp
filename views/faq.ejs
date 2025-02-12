@@ -98,7 +98,19 @@
 
         <div class="rounded-container" style="margin: 25px 0;" id="domini">
             <div class="rounded-inner">
-                <h2 style="margin: 0;">Domini attivi (mirror)</h2>
+                <h2 style="margin: 0;">Stato servizi Fermi Notify <a href="//status.fn.lkev.in/" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a></h2>
+                <div class="grid-center-2col" style="padding-top: 0.83em; line-height: 2; place-items: start;">
+                    <div class="service">
+                        <div class="dot verifying" id="service-notifier" title="Verifica in corso"></div>
+                        <span class="material-space-right">Invio notifiche (Notifier)</span>
+                        <a href="//status.fn.lkev.in/notifier" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                    <div class="service">
+                        <div class="dot verifying" id="service-notifier-backup" title="Verifica in corso"></div>
+                        <span class="material-space-right">Notifier Backup</span>
+                        <a href="//status.fn.lkev.in/notifier?service=backup" class="btn text"><span class="material-symbols-outlined">open_in_new</span></a>
+                    </div>
+                </div>
                 <div class="grid-center-2col" style="padding-top: 0.83em; line-height: 2; place-items: start;">
                     <div class="domain">
                         <div class="dot verifying" id="ferminotify-me" title="Verifica in corso"></div>
@@ -279,31 +291,57 @@
                 urlList.forEach(url => {
                     fetch(`https://${url}/status`)
                         .then(response => {
-                            if (response.ok) {
-                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
-                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('active');
-                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Online');
-                            } else {
-                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
-                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('inactive');
-                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Offline');
-                            }
+                            if (response.ok) setStatus(`${url.replace(/\./g, '-')}`, 'active');
+                            else setStatus(`${url.replace(/\./g, '-')}`, 'inactive');
                         })
                         .catch(error => {
                             // if req blocked by CORS, set as inactive
                             if (error.name === 'TypeError') {
-                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
-                                document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('inactive');
-                                document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Offline');
+                                setStatus(`${url.replace(/\./g, '-')}`, 'inactive');
                                 return;
                             }
-                            document.querySelector(`#${url.replace(/\./g, '-')}`).classList.remove('verifying');
-                            document.querySelector(`#${url.replace(/\./g, '-')}`).classList.add('na');
-                            document.getElementById(url.replace(/\./g, '-')).setAttribute('title', 'Errore sconosciuto');
+                            setStatus(`${url.replace(/\./g, '-')}`, 'na');
                         });
+                });
+
+
+                // check service
+                $.get('//status.fn.lkev.in/notifier/get/status', function(response){
+                    // response is a json with status 
+                    if(response.status == 'error') setStatus('service-notifier', 'inactive');
+                    else setStatus('service-notifier', 'active');
+                }).fail(function(){
+                    setStatus('service-notifier', 'na');
+                });
+                $.get('//status.fn.lkev.in/notifier/get/status?backup=true', function(response){
+                    // response is a json with status 
+                    if(response.status == 'error') setStatus('service-notifier-backup', 'inactive');
+                    else if(response.status == 'idle') setStatus('service-notifier-backup', 'idle');
+                    else setStatus('service-notifier-backup', 'active');
+                }).fail(function(){
+                    setStatus('service-notifier-backup', 'na');
                 });
                     
             });
+
+            function setStatus(id, status){
+                document.getElementById(id).classList.remove('verifying');
+                document.getElementById(id).classList.add(status);
+                switch(status){
+                    case 'active':
+                        document.getElementById(id).setAttribute('title', 'Online');
+                        break;
+                    case 'inactive':
+                        document.getElementById(id).setAttribute('title', 'Offline');
+                        break;
+                    case 'idle':
+                        document.getElementById(id).setAttribute('title', 'Idle');
+                        break;
+                    default:
+                        document.getElementById(id).setAttribute('title', 'Errore sconosciuto');
+                        break;
+                }
+            }
         </script>
 
         <!--script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script-->
@@ -601,6 +639,15 @@
                     Per cambiare l'orario di invio delle Daily Notification, vai nella <a href="/dashboard" class="link">Dashboard</a> e seleziona l'orario desiderato.
                 </p>
             </div>
+
+            <div class="question" id="emailSpam">
+                <h3>6. Le email sono segnate come SPAM</h3>
+                <p class="answer">
+                    Tutte le nostre email vengono inviate dai nostri server <i>self-hosted</i> senza dipendere da servizi di terze parti. Pertanto, i provider di email come Gmail o Outlook potrebbero contrassegnare le email come SPAM o, in alcuni casi, bloccarle completamente.<br>
+                    Se trovi una notifica nella cartella <span class="primary-text">SPAM</span> o <span class="primary-text">Promozioni</span>, ti invitiamo a segnarla come <i>non spam</i> per spostarla nella cartella <span class="primary-text">Posta in arrivo</span>.<br>
+                    Un'alternativa per evitare che le email vengano contrassegnate come SPAM &egrave; utilizzare l'email istituzionele <i>@fermimn.edu.it</i> o ricevere le notifiche tramite Telegram.
+                </p>
+            </div>
         </div>
 
         <div id="privacyContainer" class="indexElemContainer">
@@ -799,6 +846,7 @@
 
         var URLParams = new URLSearchParams(window.location.search);
         var page = URLParams.get("page");
+        var section = URLParams.get("s");
         if(page == "privacy" || page == "configurazione" || page == "generali"){
             document.querySelectorAll(".indexElem").forEach(elem => {
                 elem.classList.remove("active");
@@ -808,17 +856,18 @@
                 showPage(page);
             });
         }
-        var section = URLParams.get("s");
         if(section){
             // scroll to section
-            var elem = document.getElementById(section);
-            if(elem){
-                var scroll = elem.getBoundingClientRect().top + window.scrollY - 50;
-                window.scrollTo({
-                    top: scroll,
-                    behavior: 'smooth'
-                });
-            }
+            $(document).ready(function() {
+                var elem = document.getElementById(section);
+                if(elem){
+                    var scroll = elem.getBoundingClientRect().top + window.scrollY - 75;
+                    window.scrollTo({
+                        top: scroll,
+                        behavior: 'smooth'
+                    });
+                }
+            });
         }
         history.replaceState({}, document.title, "/" + "faq");
     </script>

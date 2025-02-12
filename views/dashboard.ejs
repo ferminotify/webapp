@@ -245,28 +245,6 @@
         </div>
         <!------------------>
 
-        <!-- Telegram -->
-        <div class="sub-section" id="Telegram">
-            <h2><i class="fa-brands fa-telegram"></i> Telegram</h2>
-            <% if (tgun.charAt(0)==='X' ) { %>
-                <p style="margin-bottom: 20px">Ricevi la notifica tramite messaggio su Telegram.</p>
-                <p>Per essere notificat<span class="user-gender-o-a"></span> su Telegram, manda
-                </p>
-                <p onclick="copy()" class="telegramCodeContainer"><i class="fa-solid fa-copy"></i> <span
-                        id="telegramCode"><code><%= tgun %></code></span>
-                </p>
-                <p>a <b><a href="https://t.me/FermiNotifierBot" target="_blank"
-                            class="link">@FermiNotifierBot</a></b> su
-                    Telegram.</p>
-                <% } else { %>
-                    <p>Il tuo account telegram risulta correttamente collegato! (ID:
-                        <code><%= tgun %></code>)
-                    </p>
-                    <% } %>
-
-        </div>
-        <!------------------>
-
         <!-- ON/OFF SETTINGS -->
         <div class="sub-section">
             <h2><i class="fa-solid fa-gear"></i> Impostazioni</h2>
@@ -509,6 +487,28 @@
                     }
                 }
             </script>
+        </div>
+        <!------------------>
+
+        <!-- Telegram -->
+        <div class="sub-section" id="Telegram">
+            <h2><i class="fa-brands fa-telegram"></i> Telegram</h2>
+            <% if (tgun.charAt(0)==='X' ) { %>
+                <p style="margin-bottom: 20px">Ricevi la notifica tramite messaggio su Telegram.</p>
+                <p>Per essere notificat<span class="user-gender-o-a"></span> su Telegram, manda
+                </p>
+                <p onclick="copy()" class="telegramCodeContainer"><i class="fa-solid fa-copy"></i> <span
+                        id="telegramCode"><code><%= tgun %></code></span>
+                </p>
+                <p>a <b><a href="https://t.me/FermiNotifierBot" target="_blank"
+                            class="link">@FermiNotifierBot</a></b> su
+                    Telegram.</p>
+                <% } else { %>
+                    <p>Il tuo account telegram risulta correttamente collegato! (ID:
+                        <code><%= tgun %></code>)
+                    </p>
+                    <% } %>
+
         </div>
         <!------------------>
 

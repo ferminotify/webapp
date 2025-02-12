@@ -55,6 +55,12 @@
 .input-warning{
     display: none;
 }
+.input-suggestion{
+    padding-top: 5px;
+    display: flex;
+    color: var(--muted);
+    font-size: 0.84rem;
+}
 
 .form-logo{
     width: min(calc(100% - 100px), 300px);
