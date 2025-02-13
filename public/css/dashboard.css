@@ -272,6 +272,7 @@
 }
 
 .dashboard-select, .dashboard-select:disabled{
+    -webkit-appearance: none;
     background: transparent;
     width: min(100%, 345px);
     height: 38px;
