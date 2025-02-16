@@ -39,3 +39,62 @@
 		</script>
 	<% }) %>
 <% } %>
+
+<script>
+	if(localStorage.getItem("alert_emailBlockSpam_01") != "hide"){
+		var html = `
+<style>
+	.bigalert{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.8);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 1000;
+	}
+	.bigalert-inner{
+		max-width: 760px;
+		width: 75%;
+		padding: 25px 35px;
+		border-radius: 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		background-color: var(--surface);
+		color: #fff;
+		line-height: 1.5;
+	}
+	.bigalert-inner p{
+		font-size: 16px;
+		text-align: justify;
+	}
+	.two-container{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+</style>
+<div class="bigalert" id="alert_emailBlockSpam_01">
+	<div class="bigalert-inner">
+		<div class="two-container" style="padding-bottom: 0.83em;">
+			<h2 style="margin: 0;">Problemi con notifiche email!</h2>
+			<button onclick="closeBigAlert()" class="btn text" style="font-size: 1.5em;">&times;</button>
+		</div>
+		<p style="padding-bottom: 10px;">Tutte le nostre email vengono inviate dai nostri server <i>self-hosted</i> senza dipendere da servizi di terze parti. Pertanto, i provider di email come Gmail / Outlook / Libero potrebbero contrassegnare le email come SPAM o, in alcuni casi, bloccarle completamente.</p>
+		<p style="padding-bottom: 10px">Se trovi una notifica in <span class="primary-text">SPAM</span>, ti invitiamo a contrassegnarla come <i>non spam</i> per spostarla nella cartella <span class="primary-text">Posta in arrivo</span>.</p>
+		<p style="padding-bottom: 10px;" class="primary-text"><i class="fa-solid fa-circle-check"></i> Per ricevere correttamente tutte le notifiche, consigliamo di usare l'email istituzionele <i>@fermimn.edu.it</i> o ricevere le notifiche tramite Telegram.</p>
+		<p style="padding-bottom: 10px;">Per ulteriori informazioni, contattaci su Instagram
+			<i><a class="link" href="https://www.instagram.com/ferminotify/"><i class="fa-brands fa-instagram"></i> ferminotify</a></i>.</p>
+		<p>Ci scusiamo per il disagio,<br/>Il team di Fermi Notify</p>
+	</div>
+</div>
+		`;
+		document.body.innerHTML += html;
+	}
+	function closeBigAlert(){
+		document.getElementById("alert_emailBlockSpam_01").style.animation = "hideAlert 0.5s ease-in-out forwards";
+		localStorage.setItem("alert_emailBlockSpam_01", "hide");
+	}
+</script>
