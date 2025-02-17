@@ -76,7 +76,7 @@ console.error = async function (...args) {
 };
 
 app.get("/", async (req, res) => {
-  res.render("index.ejs", { isLogged: req.isAuthenticated() });
+  res.render("index.ejs", { isLogged: req.isAuthenticated(), email: req.isAuthenticated() ? req.user.email : null });
 });
 
 app.get("/faq", async (req, res) => {
@@ -676,6 +676,24 @@ app.get("/user/unsubscribe", async (req, res) => {
 app.get("/status", async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.send("OK👍");
+});
+
+// analytics - save to db searched keywords in filtraEventi
+app.post("/api/analytics/searched-keywords-filtraEventi", async (req, res) => {
+  let keywords = req.body.keyword.split(", ");
+  keywords = keywords.filter(kw => kw.length <= 100);
+  let user_email = req.body.user_email.trim() !== "" && req.body.user_email.length <= 100 ? req.body.user_email : null;
+  keywords.forEach(async kw => {
+    try {
+      await pool.query(
+        `INSERT INTO filtra_eventi_kw (email, keyword, timestamp)
+          VALUES ($1, $2, CURRENT_TIMESTAMP)`,
+        [user_email, kw]
+      );
+    } catch (error) {
+      console.error("ERR ANALYTICS SEARCHED KEYWORDS FILTRAEVENTI " + kw + ": " + error);
+    }
+  });
 });
 
 // get unsubscribe from email info
