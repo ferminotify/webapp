@@ -13,6 +13,7 @@
   "author": "Fermi Notify Team",
   "license": "CC-BY-SA-4.0 license",
   "dependencies": {
+    "@azure/communication-email": "^1.0.0",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",
     "ejs": "^3.1.8",
