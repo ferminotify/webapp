@@ -11,39 +11,39 @@ function initialize(passport) {
       [email],
       (err, results) => {
         if (err) {
-          throw err;
+          console.error("ERR PASSPORT DATABASE QUERY:", err);
+          return done(null, false, { message: "Si è verificato un errore nella connessione al database. Riprova più tardi." });
         }
 
         if (results.rows.length > 0) {
           const user = results.rows[0];
 
           /**
-           * I check if the user has confirmated its email. 
+           * Check if the user has confirmated its email. 
            * When the email is not yet confirmed its number
            * of notifications is negative, otherwise is positive
            */
           if (user.notifications < 0) {
-            return done(null, false, { message: "Email non ancora confermata" });
+            return done(null, false, { message: "Email non ancora confermata." });
           }
-          
-          /**
-           * Then I check for the password matching.
-           */
+
+          // Check for the password match
           bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
-              console.log(err);
+              console.error("ERR PASSPORT PSW COMPARE: ", err);
+              return done(null, false, { message: "Si è verificato un errore nella verifica della password. Riprova più tardi." });
             }
+
             if (isMatch) {
               return done(null, user);
             } else {
-              //password is incorrect
-              return done(null, false, { message: "La password è scorretta" });
+              return done(null, false, { message: "La password è scorretta." });
             }
           });
         } else {
           // No user
           return done(null, false, {
-            message: "Non sono registrati utenti con quella email"
+            message: "Non sono registrati utenti con le email " + email + "."
           });
         }
       }
@@ -68,6 +68,7 @@ function initialize(passport) {
   passport.deserializeUser((id, done) => {
     pool.query(`SELECT * FROM subscribers WHERE id = $1`, [id], (err, results) => {
       if (err) {
+        console.error("ERR PASSPORT Database query error during deserialization:", err); // Log the error
         return done(err);
       }
       return done(null, results.rows[0]);
