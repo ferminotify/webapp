@@ -85,6 +85,19 @@ app.get("/", async (req, res) => {
   res.render("index.ejs", { isLogged: req.isAuthenticated(), email: req.isAuthenticated() ? req.user.email : null });
 });
 
+app.get("/calendar", async (req, res) => {
+  const url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/"
+  let format = req.query.format;
+  switch(format) {
+    case "csv":
+      res.redirect(url + "gviz/tq?tqx=out:csv");
+      break;
+    default:
+    res.redirect(url);
+    break;
+  }
+});
+
 app.get("/faq", async (req, res) => {
   res.render("faq.ejs", { isLogged: req.isAuthenticated() });
 });
