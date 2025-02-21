@@ -11,6 +11,7 @@ var bodyParser = require('body-parser')
 //const nodemailer = require('nodemailer');
 
 const cors = require('cors');
+const axios = require('axios');
 
 const { EmailClient } = require("@azure/communication-email");
 const connectionString = process.env['AZURE_EMAIL_CONNECTION_STRING'];
@@ -88,11 +89,14 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/calendar", cors(), async (req, res) => {
-  const url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/"
+  let url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/"
   let format = req.query.format;
   switch(format) {
     case "csv":
-      res.redirect(url + "gviz/tq?tqx=out:csv");
+      url += "gviz/tq?tqx=out:csv";
+      const response = await axios.get(url);
+      res.set('Content-Type', 'text/csv');  // Set the response content type to CSV
+      res.send(response.data);
       break;
     default:
     res.redirect(url);
