@@ -8,7 +8,9 @@ const session = require("express-session");
 require("dotenv").config();
 const path = require(`path`);
 var bodyParser = require('body-parser')
-const nodemailer = require('nodemailer');
+//const nodemailer = require('nodemailer');
+
+const cors = require('cors');
 
 const { EmailClient } = require("@azure/communication-email");
 const connectionString = process.env['AZURE_EMAIL_CONNECTION_STRING'];
@@ -65,7 +67,7 @@ const transporter = nodemailer.createTransport({
 
 app.use((req, res, next) => {
   const ext = path.extname(req.originalUrl);
-  if (req.method === 'GET' && !ext && req.originalUrl !== '/health' && req.originalUrl !== '/status') {
+  if (req.method === 'GET' && !ext && req.originalUrl !== '/health' && req.originalUrl !== '/status' && req.originalUrl !== '/calendar') {
     console.log("[" + req.get('host') + "] GET " + req.originalUrl);
     if(req.hostname != 'localhost') DBLog(req.get('host'));
   }
@@ -85,7 +87,7 @@ app.get("/", async (req, res) => {
   res.render("index.ejs", { isLogged: req.isAuthenticated(), email: req.isAuthenticated() ? req.user.email : null });
 });
 
-app.get("/calendar", async (req, res) => {
+app.get("/calendar", cors(), async (req, res) => {
   const url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/"
   let format = req.query.format;
   switch(format) {
