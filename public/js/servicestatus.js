@@ -23,7 +23,7 @@ function fetchWithRetries(url, retries = 3) {
 					} else {
                     	generateError("error", `Possibili problemi con la connessione al database. Tentativo ${attempt}.`);
 						attempt++;
-						attemptFetch();
+						setTimeout(attemptFetch, 1000);
 					}
                 }
             })
@@ -32,6 +32,7 @@ function fetchWithRetries(url, retries = 3) {
                 if (attempt < retries) {
                     attempt++;
                     attemptFetch();
+					setTimeout(attemptFetch, 1000);
                 } else {
                     generateError("error", `Possibili problemi con la connessione al database dopo ${retries} tentativi.`);
                 }
