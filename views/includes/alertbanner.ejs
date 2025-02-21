@@ -1,3 +1,46 @@
+<script>
+	function generateError(type, msg){
+		let alertBanner;
+		switch(type){
+			case "success":
+				alertBanner = document.createElement("div");
+				alertBanner.className = "successbanner";
+				alertBanner.id = "alertbanner";
+				alertBanner.innerHTML = `
+					<p id="alertmessage"><i class="fa-solid fa-check"></i> ${msg}</p>
+				`;
+				document.body.appendChild(alertBanner);
+				break;
+			case "error":
+				alertBanner = document.createElement("div");
+				alertBanner.className = "errorbanner";
+				alertBanner.id = "alertbanner";
+				alertBanner.innerHTML = `
+					<p id="alertmessage"><i class="fa-solid fa-circle-exclamation"></i> ${msg}</p>
+				`;
+				document.body.appendChild(alertBanner);
+				break;
+			default:
+				break;
+		}
+
+		// Add animation and click event to close the banner
+		alertBanner.style.animation = "showAlert 0.5s ease-in-out forwards";
+		alertBanner.addEventListener("click", function() {
+			alertBanner.style.animation = "hideAlert 0.5s ease-in-out forwards";
+		});
+	}
+
+	<% if(messages.success_msg) { %>
+		generateError("success", "<%= messages.success_msg %>");
+	<% } %>
+	<% if(messages.error_msg) { %>
+		<% messages.error_msg.forEach(error => { %>
+			generateError("error", "<%= error %>");
+		<% }) %>
+	<% } %>
+</script>
+
 <% if (typeof errors != 'undefined') { %> 
 	<div id="alertbanner" class="errorbanner">
 		<ul style="list-style: none; padding-left: 0; margin: 0">
@@ -12,32 +55,6 @@
 			document.getElementById("alertbanner").style.animation = "hideAlert 0.5s ease-in-out forwards";
 		});
 	</script>
-<% } %>
-
-<% if(messages.success_msg) { %>
-	<div id="alertbanner" class="successbanner">
-		<p id="alertmessage"><i class="fa-solid fa-check"></i> <%= messages.success_msg %></p>
-	</div>
-	<script>
-		document.getElementById("alertbanner").style.animation = "showAlert 0.5s ease-in-out forwards";
-		document.getElementById("alertbanner").addEventListener("click", function() {
-			document.getElementById("alertbanner").style.animation = "hideAlert 0.5s ease-in-out forwards";
-		});
-	</script>
-<% } %>
-
-<% if(messages.error_msg) { %>
-	<% messages.error_msg.forEach(error => { %>
-		<div id="alertbanner" class="errorbanner">
-			<p id="alertmessage"><i class="fa-solid fa-circle-exclamation"></i> <%= error %></p>
-		</div>
-		<script>
-			document.getElementById("alertbanner").style.animation = "showAlert 0.5s ease-in-out forwards";
-			document.getElementById("alertbanner").addEventListener("click", function() {
-				document.getElementById("alertbanner").style.animation = "hideAlert 0.5s ease-in-out forwards";
-			});
-		</script>
-	<% }) %>
 <% } %>
 
 <script>
