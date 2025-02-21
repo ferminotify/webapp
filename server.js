@@ -68,7 +68,7 @@ const transporter = nodemailer.createTransport({
 
 app.use((req, res, next) => {
   const ext = path.extname(req.originalUrl);
-  if (req.method === 'GET' && !ext && req.originalUrl !== '/health' && req.originalUrl !== '/status' && req.originalUrl !== '/calendar') {
+  if (req.method === 'GET' && !ext && req.path !== '/health' && req.path !== '/status' && req.path !== '/calendar') {
     console.log("[" + req.get('host') + "] GET " + req.originalUrl);
     if(req.hostname != 'localhost') DBLog(req.get('host'));
   }

@@ -29,13 +29,6 @@ function fetchWithRetries(url, retries = 3) {
             })
             .catch(err => {
                 console.error(`Fetch error on attempt ${attempt}:`, err);
-                if (attempt < retries) {
-                    attempt++;
-                    attemptFetch();
-					setTimeout(attemptFetch, 1000);
-                } else {
-                    generateError("error", `Possibili problemi con la connessione al database dopo ${retries} tentativi.`);
-                }
             });
     }
 
