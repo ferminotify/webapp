@@ -24,7 +24,7 @@ function initialize(passport) {
            * of notifications is negative, otherwise is positive
            */
           if (user.notifications < 0) {
-            return done(null, false, { message: "Email non ancora confermata." });
+            return done(null, false, { message: "Ti abbiamo inviato una mail per confermare l'account! (controlla anche lo SPAM)", confirm: false });
           }
 
           // Check for the password match

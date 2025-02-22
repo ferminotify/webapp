@@ -209,11 +209,9 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
 
 // GET LOGIN
 app.get("/login", checkAuthenticated, (req, res) => {
-  // flash sets a messages variable. passport sets the error message
-  if (req.session.flash != undefined && req.session.flash.error != undefined){
-    console.error("ERR LOG IN: " + req.session.flash.error);
-    // temp fix TODO
-    req.flash("error_msg", req.session.flash.error);
+  if (req.session.flash != undefined && req.session.flash.error_msg != undefined){
+    console.error("ERR LOG IN: " + req.session.flash.error_code);
+    req.flash("error_msg", req.session.flash.error_msg);
   }
   res.render("login.ejs", { isLogged: false });
 });
@@ -221,25 +219,61 @@ app.get("/login", checkAuthenticated, (req, res) => {
 // POST LOGIN
 // Middleware to save the returnTo URL before authentication
 function saveReturnTo(req, res, next) {
-  if (req.session.returnTo) {
-    res.locals.returnTo = req.session.returnTo; // Store it temporarily in `res.locals`
-  }
+  if (req.session.returnTo) res.locals.returnTo = req.session.returnTo; // Store it temporarily in `res.locals`
   next();
 }
-app.post(
-  "/login",
-  saveReturnTo,
-  passport.authenticate("local", {
-    failureRedirect: "/login",
-    failureFlash: true,
-  }),
-  (req, res) => {
-    // Retrieve the saved returnTo URL or default to /dashboard
-    const redirectUrl = res.locals.returnTo || "/dashboard";
-    delete req.session.returnTo; // Clean up the session
-    res.redirect(redirectUrl);
-  }
-);
+app.post("/login", saveReturnTo, (req, res, next) => {
+  passport.authenticate("local", async (err, user, info) => {
+    if (err) {
+      req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+      req.flash("error_code", err.message + " " + req.body.email);
+      return res.redirect("/login");
+    }
+
+    if (!user) {
+      // authentication failed
+      if(info.confirm == false){
+        let userInfo = await getUserInfoByEmail(req.body.email, ["name", "telegram", "notifications", "gender"]);
+        let name = userInfo.name;
+        let telegramTemporaryCode = userInfo.telegram;
+        let notifications = userInfo.notifications;
+        let gender = userInfo.gender;
+        let email = req.body.email;
+        if (notifications < 0) {
+          // resend email
+          try{
+            sendMail(
+              to = email,
+              subject = `Conferma la registrazione`,
+              html = `<!doctype html><html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Ciao ${name}!</h2><tr><td style=text-align:left><p style=line-height:1.3>Per completare la registrazione, conferma il tuo indirizzo email:<tr><td style="padding:15px 0"><a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style="font-size:14px;letter-spacing:1.2px;padding:13px 17px;font-weight:600;background-color:#004a77;border-radius:10px;color:#fff;text-decoration:none"target=_blank>Conferma email</a><tr><td style=text-align:left><p style=line-height:1.3>Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo.<tr><td style=text-align:left><p style=line-height:1.3>A presto!</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Il bottone non funziona? Conferma l'email attraverso il seguente link: <a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style=color:#004a77 target=_blank>https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}</a>.<p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px alt="Fermi Notify"></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a <i>Fermi Notify</i>. Se non sei stato tu, ignora questa email.</table></main><html>`,
+              plainText = `Ciao ${name}! Per completare la registrazione, conferma il tuo indirizzo email: https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}. Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo. A presto!`,
+            );
+          } catch (err) {
+            req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${err.message})`);
+            req.flash("error_code", " (RESEND MAIL) " + err.message + " " + email);
+            return res.redirect("/login");
+          }
+        }
+      }
+      req.flash("error_msg", info.message);
+      req.flash("error_code", info.message + " " + req.body.email);
+      return res.redirect("/login");
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+        req.flash("error_code", err.message + " " + req.body.email);
+        return res.redirect("/login");
+      }
+
+      // Retrieve the saved returnTo URL or default to /dashboard
+      const redirectUrl = res.locals.returnTo || "/dashboard";
+      delete req.session.returnTo; // Clean up the session
+      return res.redirect(redirectUrl);
+    });
+  })(req, res, next); // Explicitly invoke passport.authenticate
+});
 
 
 app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
@@ -901,6 +935,18 @@ async function getUserEmailWithTelegramID(telegramId) {
   } catch (err) {
     console.error("ERR GET EMAIL WITH TG ID " + telegramId + ": " + err.stack);
   }
+}
+
+async function getUserInfoByEmail(email, fields) {
+  try {
+    const RES = await pool.query(
+      `SELECT ${fields.join(", ")} FROM subscribers
+        WHERE email = '${email}'`,
+    );
+    return RES.rows[0];
+  } catch (err) {
+    console.error("ERR GET USER INFO BY EMAIL " + email + ": " + err.stack);
+  }  
 }
 
 async function getNumberNotification(email){
