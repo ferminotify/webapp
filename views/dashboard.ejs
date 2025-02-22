@@ -89,6 +89,41 @@
             }
         }
     </script>
+
+    <script>
+        var URLParams = new URLSearchParams(window.location.search);
+        var section = URLParams.get("s");
+
+        if(!<%= temp_dash_orario %> && NOT_TIME == "06:00:00" && NOT_DAY_BEFORE == "false"){
+            // show orario section + info alert
+            section = "orario";
+            generateAlert("info", "Puoi personalizzare l'orario di notifica per ricevere le notifiche in anticipo!");
+            document.addEventListener("DOMContentLoaded", () => {
+                // add blinking (style.css) to .notTime-edit-btn until click
+                $(".notTime-edit-btn .fa-solid").css("animation", "blinking 1s infinite");
+                $(".notTime-edit-btn").click(function(){
+                    $(".notTime-edit-btn .fa-solid").css("animation", "none");
+                });
+            });
+        }
+        document.addEventListener("eventsLoaded", () => {
+            if (section) {
+                // Scroll only after events are loaded
+                const observer = new MutationObserver((mutations, obs) => {
+                    let scroll = document.getElementById(section).getBoundingClientRect().top + window.scrollY - 50;
+                    window.scrollTo({
+                        top: scroll,
+                        behavior: 'smooth'
+                    });
+                    obs.disconnect(); // Stop observing after scrolling
+                });
+
+                // Observe changes inside #events
+                observer.observe(document.getElementById("events"), { childList: true, subtree: true });
+            }
+        });
+        history.replaceState({}, document.title, "/" + "dashboard");
+    </script>
     
 </head>
 <body>
@@ -872,16 +907,21 @@
 
         console.log(keywords);
 
-        if (keywords.length == 0) { // no keywords
-            $("#events").append("<p style='color: var(--on-surface-primary);'>Nessuna keyword inserita</p>");
-            $("#events-loading").hide();
-        } else {
+        async function loadEvents() {
+            if (keywords.length == 0) { // no keywords
+                $("#events").append("<p style='color: var(--on-surface-primary);'>Nessuna keyword inserita</p>");
+                $("#events-loading").hide();
+            } else {
 
-            events();
+                await events();
 
+            }
+            document.dispatchEvent(new Event("eventsLoaded"));
         }
 
-        function events(){
+        loadEvents();
+
+        async function events(){
             keywords = getKeywords(); // get keywords again so that if a keyword is deleted it's possible to update events without reloading the page
             (async function fetchData() {
                 try {
@@ -890,7 +930,7 @@
                     const response = await fetch(url);
                     $("#events-loading").hide();
                     const data = await response.text();
-                    printEvents(data);
+                    await printEvents(data);
                 } catch (error) {
                     // print error in the page
                     $("#events").append("<div class='error-container' style='text-align: center'><p class='errorText'><span class='errorTitle'>Errore nel caricamento degli eventi</span> <a class='errorRetry btn text' onclick='events()'><span class='material-symbols-outlined'>autorenew</span> <span>Riprova</span></a></p><p class='errorDescription'>[ " + error.stack + " ]<br><a class='link' href='mailto:mail@fn.lkev.in?subject=Errore caricamento eventi&body=Ciao,%0D%0AHo riscontrato questo errore durante il caricamento degli eventi%0D%0A%0D%0A" + error.stack + "%0D%0A%0D%0Acon le keywords:%0D%0A" + keywords + ".%0D%0A%0D%0A%0D%0A" + moment().format("HH:mm DD/MM/YYYY") + "' style='margin-left: 5px;'> <i class='fa-solid fa-circle-exclamation'></i> Clicca qui per segnalare il problema</a><br>mail@fn.lkev.in</p></div>");
@@ -899,7 +939,7 @@
             })();
         }
 
-        function printEvents(data) {
+        async function printEvents(data) {
 
             function getEventHTML(data, startDateString, endDateString) {
                 if (endDateString !== undefined) {
@@ -1111,23 +1151,6 @@
                 }, {});
             });
         }
-    </script>
-
-    <script>
-        var URLParams = new URLSearchParams(window.location.search);
-        var section = URLParams.get("s");
-        if(section){
-            // scroll to section
-            var elem = document.getElementById(section);
-            if(elem){
-                var scroll = elem.getBoundingClientRect().top + window.scrollY - 50;
-                window.scrollTo({
-                    top: scroll,
-                    behavior: 'smooth'
-                });
-            }
-        }
-        history.replaceState({}, document.title, "/" + "dashboard");
     </script>
 
     <%- include('includes/alertbanner.ejs') %>

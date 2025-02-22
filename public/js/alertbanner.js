@@ -9,6 +9,44 @@
 	});
 </script>
 */
+function generateAlert(type, msg){
+	let alertBanner;
+	if(type){
+		alertBanner = document.createElement("div");
+		alertBanner.className = type + "banner";
+		alertBanner.id = "alertbanner";
+		switch(type){
+			case "error":
+				alertBanner.innerHTML = `
+					<p id="alertmessage"><i class="fa-solid fa-circle-exclamation"></i> ${msg}</p>
+				`;
+				break;
+			case "success":
+				alertBanner.innerHTML = `
+					<p id="alertmessage"><i class="fa-solid fa-check"></i> ${msg}</p>
+				`;
+				break;
+			case "info":
+				alertBanner.innerHTML = `
+					<p id="alertmessage"><i class="fa-solid fa-circle-info"></i> ${msg}</p>
+				`;
+				break;
+			default:
+				alertBanner.innerHTML = `
+					<p id="alertmessage">${msg}</p>
+				`;
+				break;
+		}
+		document.addEventListener("DOMContentLoaded", function(){
+			document.body.appendChild(alertBanner);
+			// Add animation and click event to close the banner
+			alertBanner.style.animation = "showAlert 0.5s ease-in-out forwards";
+			alertBanner.addEventListener("click", function() {
+				alertBanner.style.animation = "hideAlert 0.5s ease-in-out forwards";
+			});
+		});
+	}
+}
 class AlertBanner{
 	constructor(type, msg){
 		// create the alert banner

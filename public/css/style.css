@@ -914,3 +914,15 @@ code, .mono{
 	}
 }
 
+/* color blinking */
+@keyframes blinking {
+	0% {
+		color: var(--primary);
+	}
+	50% {
+		color: var(--on-surface);
+	}
+	100% {
+		color: var(--primary);
+	}
+}

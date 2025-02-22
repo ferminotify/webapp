@@ -259,8 +259,24 @@ app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
     n_pref: userInfo.notification_preferences,
     n_day_before: userInfo.notification_day_before,
     n_time: userInfo.notification_time,
-    email: userInfo.email
+    email: userInfo.email,
+    temp_dash_orario: userInfo.temp_dash_orario
   });
+
+  // only once
+  if(!userInfo.temp_dash_orario){
+    pool.query(
+      `UPDATE subscribers
+        SET temp_dash_orario = TRUE
+        WHERE email = $1;`,
+      [userInfo.email],
+      (err, result) => {
+        if (err) {
+          console.error("ERR TEMP ORARIO [1] " + userInfo.email + ": " + err);
+        }
+      }
+    );
+  }
 });
 
 app.get("/users/register/confirmation/:id", async (req, res, next) => {
