@@ -89,6 +89,7 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/calendar", cors(), async (req, res) => {
+  /*
   let url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/"
   let format = req.query.format;
   switch(format) {
@@ -102,6 +103,11 @@ app.get("/calendar", cors(), async (req, res) => {
     res.redirect(url);
     break;
   }
+  */
+  let url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/export?format=csv&id=1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g&gid=0"
+  const response = await axios.get(url);
+  res.set('Content-Type', 'text/csv');  // Set the response content type to CSV
+  res.send(response.data);
 });
 
 app.get("/faq", async (req, res) => {
