@@ -110,6 +110,14 @@ app.get("/", async (req, res) => {
   res.render("index.ejs", { isLogged: req.isAuthenticated(), email: req.isAuthenticated() ? req.user.email : null });
 });
 
+app.get("/robots.txt", (req, res) => {
+  res.type('text/plain');
+  res.send(`
+User-agent: *
+Disallow:
+  `);
+});
+
 app.get("/calendar", cors(), async (req, res) => {
   /*
   let url = "https://docs.google.com/spreadsheets/d/1ADaUVRQeYU078-suUxGk0u1aMj_GbcjsAzG11YlMp5g/"
