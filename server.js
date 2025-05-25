@@ -67,6 +67,28 @@ const transporter = nodemailer.createTransport({
 */
 
 app.use((req, res, next) => {
+  // Solo se REFERRAL_HOST è settato
+  if (!process.env.REFERRAL_HOST) return next();
+
+  // Sovrascrivi res.render
+  const originalRender = res.render;
+  res.render = function(view, options = {}, callback) {
+    // Chiama il render originale
+    originalRender.call(res, view, options, function(err, html) {
+      if (err) return callback ? callback(err) : next(err);
+
+      // Inserisci il canonical dopo <head>
+      const canonicalTag = `<link rel="canonical" href="${process.env.REFERRAL_HOST}${req.originalUrl}" />\n`;
+      html = html.replace(/<head>/i, `<head>\n${canonicalTag}`);
+
+      if (callback) return callback(null, html);
+      res.send(html);
+    });
+  };
+  next();
+});
+
+app.use((req, res, next) => {
   const ext = path.extname(req.originalUrl);
   if (req.method === 'GET' && !ext && req.path !== '/health' && req.path !== '/status' && req.path !== '/calendar') {
     console.log("[" + req.get('host') + "] GET " + req.originalUrl);
