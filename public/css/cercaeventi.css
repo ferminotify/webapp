@@ -69,6 +69,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	gap: 10px;
+	position: relative;
 }
 .filter-on-circle{
 	position: absolute;
@@ -76,6 +77,11 @@
     right: 5%;
     visibility: hidden;
     font-size: 12px !important;
+}
+
+.reset-filter-btn{
+	position: absolute;
+	right: 0;
 }
 
 /***** eventi in programma *****/

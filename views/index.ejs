@@ -106,6 +106,7 @@
 		<a class="btn outlined filter-btn hidden" onclick="filter(this)">In corso</a>
 		<a class="btn outlined filter-btn hidden" onclick="filter(this)">Futuri</a>
 		<a class="btn outlined filter-btn hidden" onclick="filter(this)">Conclusi</a>
+		<a class="btn text reset-filter-btn hidden" onclick="resetFilters()">Reset filtri</a>
 	</div>
 
 	<div class="events-content-container">
@@ -515,6 +516,9 @@
 		$(".filter-btn").removeClass("filled");
 		$(".filter-btn").addClass("outlined");
 
+		$(".reset-filter-btn").addClass("hidden");
+		$(".reset-filter-btn").removeClass("fade-right");
+
 		$(".event").css("display", "flex");
 
 		if (!isFilled) {
@@ -562,6 +566,8 @@
 				if($(this).text() == localStorage.getItem('filter')){
 					filter(this);
 					$('.filter-on-circle').css('visibility', 'visible');
+					$(".reset-filter-btn").removeClass("hidden");
+					$(".reset-filter-btn").addClass("fade-right");
 				}
 			});
 		}
@@ -574,6 +580,9 @@
 		$elem.find('.material-symbols-outlined').html($elem.find('.material-symbols-outlined').html() == 'tune' ? 'close' : 'tune');
 
 		$('.filter-on-circle').css('visibility', 'hidden');
+
+		$(".reset-filter-btn").removeClass("fade-right");
+		$(".reset-filter-btn").addClass("fade-left-out");
 		
 		let $filterBtns = $('.filter-btn');
 		for(let i = 0; i < $filterBtns.length; i++){
@@ -585,9 +594,29 @@
 					if($filterBtns.eq($filterBtns.length - i - 1).hasClass('filled')) $('.filter-on-circle').css('visibility', 'visible');
 					$filterBtns.eq($filterBtns.length - i - 1).removeClass('fade-right');
 					$filterBtns.eq($filterBtns.length - i - 1).addClass('fade-left-out');
+					// if there is a active filter, show the reset filter button
+					if($('.filter-btn.filled').length > 0){
+						$(".reset-filter-btn").removeClass("hidden");
+						$(".reset-filter-btn").removeClass("fade-left-out");
+						$(".reset-filter-btn").addClass("fade-right");
+					}
 				}
             }, 150 * i);
 		}
+	}
+
+	function resetFilters(){
+		$(".filter-btn").removeClass("filled");
+		$(".filter-btn").addClass("outlined");
+		$(".event").css("display", "flex");
+		$(".reset-filter-btn").removeClass("fade-right");
+		$(".reset-filter-btn").addClass("fade-left-out");
+		$(".filter-on-circle").css("visibility", "hidden");
+		$("#events-0").css("display", "block");
+		$("#events-1").css("display", "block");
+		$("#events-2").css("display", "block");
+		$("#events-3").css("display", "block");
+		localStorage.removeItem("filter");
 	}
 </script>
 
