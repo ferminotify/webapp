@@ -376,6 +376,14 @@ app.get("/password_reset", (req, res) => {
   res.render("password_reset.ejs", { isLogged: false });
 });
 
+app.get("/sitemap", (req, res) => {
+  res.render("sitemap.ejs", { isLogged: req.isAuthenticated() });
+});
+
+app.get("/cercaeventi", (req, res) => {
+  res.redirect("/");
+});
+
 app.get("/credits", (req, res) => {
   res.render("credits.ejs", { isLogged: req.isAuthenticated() });
 });
@@ -390,6 +398,13 @@ app.get("/recruiting", (req, res) => {
 
 app.get("/source", (req, res) => {
   res.redirect("https://github.com/ferminotify");
+});
+app.get("/github", (req, res) => {
+  res.redirect("https://github.com/ferminotify");
+});
+
+app.get("/instagram", (req, res) => {
+  res.redirect("https://instagram.com/ferminotify");
 });
 
 app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1

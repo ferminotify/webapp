@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fermi Notify è un servizio non ufficiale dell'IS &quot;E. Fermi&quot; Mantova che invia delle notifiche per avvisare delle variazioni dell'orario del calendario giornaliero.">
+    <meta propety="og:image" content="/img/og-logo.png">
+    <meta property="og:description" content="Fermi Notify è un servizio non ufficiale dell'IS &quot;E. Fermi&quot; Mantova che invia delle notifiche per avvisare delle variazioni dell'orario del calendario giornaliero.">
+    <meta property="og:title" content="Fermi Notify">
+    <meta property="og:type" content="website">
+    <script src="/js/hamburger.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/img/favicon-black.png">
+    <!-- css -->
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="stylesheet" href="/css/alertbanner.css" type="text/css">
+    <link rel="stylesheet" href="/css/page.css" type="text/css">
+    <link rel="stylesheet" href="/css/buymeacoffee.css" type="text/css">
+    <link rel="preload" href="/css/dark.css" as="style">
+	<link rel="preload" href="/css/light.css" as="style">
+    <link rel="stylesheet" href="/css/dark.css" type="text/css" id="themeCSS">
+    <script src="/js/changeTheme.js"></script>
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/95ae55bd9a.js" crossorigin="anonymous"></script>
+    <!-- Material Icon -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- jQuery 3.6.0 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+    <title>Sitemap · Fermi Notify</title>
+
+	<style>
+		.main-container{
+			padding-left: 0;
+		}
+
+		#sitemap-header{
+			background: radial-gradient(50% 123.47% at 50% 50%, #00FF94 0%, #720059 100%), linear-gradient(121.28deg, #669600 0%, #FF0000 100%), linear-gradient(360deg, #0029FF 0%, #8FFF00 100%), radial-gradient(100% 164.72% at 100% 100%, #6100FF 0%, #00FF57 100%), radial-gradient(100% 148.07% at 0% 0%, #FFF500 0%, #51D500 100%);
+			background-blend-mode: screen, color-dodge, overlay, difference, normal;
+			color: #e3e3e3;
+		}
+
+		.sitemap{
+			column-count: 3;
+			column-gap: 15px;
+		}
+
+		.list{
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			color: #1d1d1f;
+		}
+
+		.sitemap .section{
+			font-size: 17px;
+			display: inline-block;
+			vertical-align: top;
+			-webkit-column-span: 1;
+			-moz-column-span: 1;
+			column-span: 1;
+			padding: 0 20px;
+			width: fit-content;
+		}
+
+		.sitemap .section h3{
+			padding-bottom: 7px;
+			line-height: 1.47059;
+			font-weight: 600;
+			letter-spacing: -.022em;
+			margin: 0;
+			font-size: 17px;
+			width: fit-content;
+		}
+
+		.sitemap .rounded-container{
+			margin-bottom: 15px;
+		}
+
+		.section-list{
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		ul.section-list{
+			list-style: none;
+			width: fit-content
+		}
+
+		.section-list li{
+			padding-bottom: 7px;
+			width: fit-content;
+		}
+
+		.section-list li a{
+			color: var(--on-surface-primary);
+		}
+
+		.section-list li a:hover{
+			text-decoration: underline;
+		}
+
+		.rounded-container:not(#sitemap-header) {
+			transition: scale 0.2s ease-in-out;
+		}
+
+		.rounded-container:not(#sitemap-header):hover {
+			scale: 1.04;
+		}
+
+		@media screen and (max-width: 970px) {
+			.sitemap {
+				column-count: 2;
+			}
+		}
+
+		@media screen and (max-width: 640px) {
+			.sitemap {
+				column-count: 1;
+			}
+		}
+	</style>
+
+</head>
+<body>
+
+	<div class="main-container">
+        <div class="main">
+			<div class="section">
+				
+				<div class="rounded-container" id="sitemap-header">
+					<div class="rounded-inner">
+						<h1 class="firstTitle">Sitemap</h1>
+					</div>
+				</div>
+
+				<div class="sitemap">
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Servizi</h3>
+									<ul class="section-list">
+										<li><a href="/">Homepage</a></li>
+										<li><a href="/CercaEventi">Cerca Eventi</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Vari</h3>
+									<ul class="section-list">
+										<li><a href="/faq">FAQ</a></li>
+										<li><a href="/credits">Chi siamo</a></li>
+										<li><a href="/faq?page=privacy">Privacy Policy</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Contattaci</h3>
+									<ul class="section-list">
+										<li><a href="/instagram"><i class="fab fa-instagram"></i> Instagram</a></li>
+										<li><a href="/gitbub"><i class="fab fa-github"></i> GitHub</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Account</h3>
+									<ul class="section-list">
+										<li><a href="/dashboard">Dashboard</a></li>
+										<li><a href="/register">Iscrizione</a></li>
+										<li><a href="/password_reset">Reset Password</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Stato di Fermi Notify</h3>
+									<ul class="section-list">
+										<li><a href="https://status.fn.lkev.in">Dashboard</a></li>
+										<li><a href="https://status.fn.lkev.in/notifier">Notifier</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Cambia tema</h3>
+									<ul class="section-list">
+										<li class="sidebar-theme-container"><a onclick="changeTheme()" class="sidebar-theme" style="text-decoration: none; color: var(--on-surface)"><span class="material-symbols-outlined sidebar-theme-btn">light_mode</span></a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Contribuisci</h3>
+									<ul class="section-list">
+										<li><a href="/feedback">Feedback</a></li>
+										<li><a href="/recruiting">Candidati</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+
+						<div class="rounded-container">
+							<div class="rounded inner">
+								<section class="section">
+									<h3>Mirror</h3>
+									<ul class="section-list">
+										<li><a href="//fn.lkev.in">fn.lkev.in</a></li>
+										<li><a href="//ferminotify.lkev.in">ferminotify.lkev.in</a></li>
+										<li><a href="//ferminotify.sirico.dev">ferminotify.sirico.dev</a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+												
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+    <%- include('includes/footer.ejs'); %>
+
+    <%- include('includes/alertbanner.ejs') %>
+
+</body>
+</html>

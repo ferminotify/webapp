@@ -469,6 +469,7 @@
 		}
 
         showEvents();
+		applyFilterFromLocalStorage();
 	}
 
 	function showEvents(){
@@ -536,6 +537,7 @@
 				default:
 					break;
 			}
+			console.log("Filter applied: " + $elem.text());
 		}
 
 		/* $eventsContainer display
@@ -547,7 +549,22 @@
 			const allChildrenHidden = $eventsContainer.find(".event").not(":hidden").length === 0;
 			$eventsContainer.css("display", allChildrenHidden ? "none" : "block");
 		}
+
+		// save in localStorage the filters
+		if($elem.hasClass("filled")) localStorage.setItem("filter", $elem.text());
+		else localStorage.removeItem("filter");
 		
+	}
+
+	function applyFilterFromLocalStorage() {
+		if(localStorage.getItem('filter') != null){
+			$('.filter-btn').each(function(){
+				if($(this).text() == localStorage.getItem('filter')){
+					filter(this);
+					$('.filter-on-circle').css('visibility', 'visible');
+				}
+			});
+		}
 	}
 
 	function showFilters(elem){
