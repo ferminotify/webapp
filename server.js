@@ -406,10 +406,6 @@ app.get("/password_reset", (req, res) => {
   res.render("password_reset.ejs", { isLogged: false });
 });
 
-app.get("/sitemap", (req, res) => {
-  res.render("sitemap.ejs", { isLogged: req.isAuthenticated() });
-});
-
 app.get("/cercaeventi", (req, res) => {
   res.redirect("/");
 });
@@ -805,6 +801,12 @@ app.post("/api/analytics/searched-keywords-filtraEventi", async (req, res) => {
   });
 });
 
+app.get("/sitemap", (req, res) => {
+  let format = req.query.format;
+  if (format === "xml") res.sendFile(path.join(__dirname, "sitemap.xml"));
+  else res.render("sitemap.ejs", { isLogged: req.isAuthenticated() });
+});
+
 // Azure main
 async function sendMail(to, subject, html, plainText, headers = {}) {
   const POLLER_WAIT_TIME = 10;
@@ -1093,4 +1095,5 @@ app.get('*', function(req, res){
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+
 });
