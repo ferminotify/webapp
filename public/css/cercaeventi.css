@@ -161,6 +161,25 @@
 	margin-right: 3px;
 }
 
+.similar-events-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 10px 0;
+}
+
+.similar-events-header p{
+	margin: 0;
+}
+
+.similar-events-header p, .similar-events-header a, .similar-events-header a span{
+	font-size: 0.85em !important;
+}
+
+.similar-events-header a{
+	text-align: right;
+}
+
 
 /***** events loading *****/
 .lds-grid {

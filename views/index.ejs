@@ -165,6 +165,7 @@
 	
 	var keywords = [];
 	var keywords_similar = [];
+	let day_similar_kw = []; // array of arrays to store in which day similar keywords events are found for render later
 
 	// get saved keywords
 	if(localStorage.getItem("keywords") != null) keywords = JSON.parse(localStorage.getItem("keywords"));
@@ -237,18 +238,36 @@
 		 * EXAMPLE: 5 CIIN -> show 5CIIN events
 		 * EXAMPLE: 3CIIN,4BMME -> split into 3CIIN and 4BMME (2 keywords)
 		 */
-		for(let i = 0; i < keywords.length; i++){ // CASE --> 3CIIN, 4BMME
-			
-			let kw_similar = keywords[i].replace(/\s+/g, ''); // remove spaces only --> 3CIIN,4BMME
-			if(kw_similar != "" && !keywords_similar.includes(kw_similar) && !keywords.includes(kw_similar)) keywords_similar.push(kw_similar);
+		const pushKw = (kw) => {
+			if (kw && !keywords_similar.includes(kw) && !keywords.includes(kw)) {
+				keywords_similar.push(kw);
+			}
+		};
 
-			kw_similar = kw_similar.replace(/[\s,;.-]+/g, ' ').trim(); // replace commas, semicolons, dots and hyphens with space --> 3CIIN 4BMME
-			kw_similar.split(" ").forEach(kw => {
-				if(kw != "" && !keywords_similar.includes(kw) && !keywords.includes(kw)) keywords_similar.push(kw);
+		for (let i = 0; i < keywords.length; i++) {
+			let base = keywords[i].toUpperCase(); // normalize case
+
+			// split on separators: comma, semicolon, dot, hyphen, underscore
+			let parts = base.split(/[,;.\-_]+/);
+
+			parts.forEach((part) => {
+				// remove spaces inside each part (so 5 CIIN → 5CIIN)
+				let kw_similar = part.replace(/\s+/g, "");
+
+				// normalize accents
+				kw_similar = kw_similar.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+				// PROF variations → PROF
+				kw_similar = kw_similar.replace(/\bPROF+\.?/gi, "PROF");
+
+				// remove stray dots inside acronyms (D.M.66 → DM66)
+				kw_similar = kw_similar.replace(/\./g, "");
+
+				// normalize leading zeros in numbers (AULA 04 → AULA 4)
+				kw_similar = kw_similar.replace(/\b0+(\d+)/g, "$1");
+
+				pushKw(kw_similar);
 			});
-
-			// END --> [3CIIN,4BMME]
-
 		}
 
 		(async function fetchData() {
@@ -426,6 +445,36 @@
 		filteredEvents.sort(sortEventsSameStartEndDate);
 		filteredEvents_similar.sort(sortEventsSameStartEndDate);
 
+		// work on day_similar_kw
+		day_similar_kw = [];
+		for (let i = 0; i < daysShown; i++) {
+			day_similar_kw.push([]);
+		}
+		// TODO very optimizable --> use a map of kw : events rather than a list of events
+		filteredEvents_similar.forEach(ev => {
+			let startDate;
+			if (ev["start.dateTime"]) {
+				startDate = moment(ev["start.dateTime"], "YYYY-MM-DDTHH:mm:ss").format("DD/MM/YYYY HH:mm:ss");
+			} else {
+				startDate = moment(ev["start.date"], "YYYY-MM-DD").format("DD/MM/YYYY");
+			}
+
+			for (let gg = 0; gg < daysShown; gg++) {
+				const dayToCheck = moment().add(gg, 'days');
+				const eventDateTime = moment(startDate, "DD/MM/YYYY HH:mm:ss");
+				const eventDate = moment(startDate, "DD/MM/YYYY");
+
+				if (eventDateTime.isSame(dayToCheck, "day") || eventDate.isSame(dayToCheck, "day")) {
+					keywords_similar.forEach(kw => {
+						if (RegExp("\\b" + kw + "\\b", "i").test(ev.summary) && !day_similar_kw[gg].includes(kw)) {
+							day_similar_kw[gg].push(kw);
+						}
+					});
+				}
+			}
+		});
+
+
 		function renderEvents(events, containerSuffix) {
 			for (var i = 0; i < events.length; i++) {
 				const ev = events[i];
@@ -539,6 +588,7 @@
 	}
 
 	function showEvents(){
+		$(".similar-events-header").remove();
 		// display block to every day container that has at least one event
 		for (let gg = 0; gg < daysShown; gg++) {
 			const $eventsContainer = $("#events-" + gg);
@@ -548,7 +598,8 @@
 			// same for similar events list
 			const hasEvents_similar = $("#events-" + gg + "-eventslist-similar").html().trim() !== "";
 			if(hasEvents_similar){
-				$("#events-" + gg + "-eventslist-similar").prepend("<p style='font-size: 0.8em; color: var(--on-surface); margin: 10px 0;'>Keyword simili</p>");
+				let similarTitleHTML = "<div class='similar-events-header'><p>Keyword simili" + (keywords_similar.length > 0 ? " (" + day_similar_kw[gg].join(", ") + ")" : "") + "</p><a class='btn text' onclick='hideSimilarEvents(this)'><span class='material-symbols-outlined material-space-right'>collapse_all</span>Nascondi eventi simili</a></div>";
+				$("#events-" + gg + "-eventslist-similar").before(similarTitleHTML);
 				$("#events-" + gg + "-eventslist-similar").show();
 				$eventsContainer.css("display", "block");
 			}
@@ -690,6 +741,19 @@
 		$("#events-2").css("display", "block");
 		$("#events-3").css("display", "block");
 		localStorage.removeItem("filter");
+	}
+</script>
+
+<script>
+	function hideSimilarEvents(elem){
+		const $elem = $(elem);
+		const $similarEventsList = $elem.closest('.events-container').find('.events-list[id$="-similar"]');
+		$similarEventsList.toggle();
+		if($similarEventsList.is(":visible")){
+			$elem.html("<span class='material-symbols-outlined material-space-right'>collapse_all</span>Nascondi eventi simili");
+		}else{
+			$elem.html("<span class='material-symbols-outlined material-space-right'>expand_all</span>Mostra eventi simili");
+		}
 	}
 </script>
 

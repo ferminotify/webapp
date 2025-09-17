@@ -7,3 +7,10 @@ function loading(n){
 	//submitBtn.innerHTML = "<img src='/IMG/loading.png' class='submit-loading rotate-loading'>";
 	submitBtn.innerHTML = "<div class='submit-lds-grid'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
 }
+
+function resetLoading(n, originalHTML, params){
+	var submitBtn = document.getElementsByClassName("submit-btn")[n];
+	submitBtn.style.width = params.width;
+	submitBtn.style.height = params.height;
+	submitBtn.innerHTML = originalHTML;
+}

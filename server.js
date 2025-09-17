@@ -682,7 +682,7 @@ app.post("/user/keyword", async function (req, res) {
     );
   }
 
-  res.redirect("/dashboard");
+  res.status(200).json({ message: sentKeyword + " aggiunto!" });
 });
 
 app.post("/user/edit", async function (req, res) {
@@ -799,6 +799,32 @@ app.post("/api/analytics/searched-keywords-filtraEventi", async (req, res) => {
       console.error("ERR ANALYTICS SEARCHED KEYWORDS FILTRAEVENTI " + kw + ": " + error);
     }
   });
+});
+
+app.get("/api/tools/similar-classes", (req, res) => {
+  let keyword = req.query.keyword;
+  if(!keyword || keyword.length > 100) {
+    return res.status(400).json({ message: "Keyword non valida!" });
+  }
+  keyword = keyword.trim().toUpperCase();
+  
+  let similarity_threshold = 0.4;
+  let limit = 1;
+
+  // cerca in DB se c'è una classe simila alla kw con pg_trgm
+  pool.query(
+    `SELECT name
+    FROM classes
+    WHERE name % $1
+    AND similarity(name, $1) > $2
+    ORDER BY similarity(name, $1) DESC
+    LIMIT $3;`, [keyword, similarity_threshold, limit], (err, results) => {
+      if (err) {
+        console.error("ERR GET SIMILAR CLASSES " + keyword + ": " + err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+      res.json(results.rows);
+    });
 });
 
 app.get("/sitemap", (req, res) => {
@@ -1095,5 +1121,4 @@ app.get('*', function(req, res){
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-
 });
