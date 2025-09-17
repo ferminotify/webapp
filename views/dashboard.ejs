@@ -73,16 +73,16 @@
         function writeUserName(){
             $(".user-name").html(USER_FIRSTNAME);
         }
-        function writeUserGender(){
+        function writeUserGender(within = ""){
             switch(USER_GENDER){
                 case 'M':
-                    $(".user-gender-o-a").html("o");
+                    $(within+" .user-gender-o-a").html("o");
                     break;
                 case 'F':
-                    $(".user-gender-o-a").html("a");
+                    $(within+" .user-gender-o-a").html("a");
                     break;
                 default:
-                    $("user-gender-o-a").html("ǝ");
+                    $(within+" .user-gender-o-a").html("ǝ");
                     break;
             }
         }
@@ -167,6 +167,7 @@
                             try {
                                 const res = await fetch(`/api/tools/similar-classes?keyword=${encodeURIComponent(kw.replace(/\s+/g, ''))}`);
                                 const data = await res.json();
+                                if(!data || !data[0] || !data[0]["name"]) return;
                                 if (data[0]["name"] && !keywords.includes(data[0]["name"])) {
                                     console.log(kw, "-->", data[0]["name"]);
                                     const similarEl = document.querySelector(`.${CSS.escape(kw.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_-]/g, ''))}-similar`);
@@ -279,8 +280,7 @@
 
             function addKeyword(kw_add) {
                 document.querySelectorAll(".alert-similar-kw").forEach(el => { el.innerHTML = ""; el.style.display = "none"; });
-                let submitBtnInner = document.getElementsByClassName("submit-btn")[0].innerHTML;
-                let params = { width: document.getElementsByClassName("submit-btn")[0].style.width, height: document.getElementsByClassName("submit-btn")[0].style.height };
+                let loading_btn_params = saveBtnParams(0);
                 loading(0);
 
                 let exists = false;
@@ -327,7 +327,7 @@
                         dataType: 'json'
                     });
 
-                    resetLoading(0, submitBtnInner, params);
+                    resetLoading(0, loading_btn_params);
                     findSimilarKeywords();
                     //events(); // TODO
                 } else {
@@ -386,7 +386,7 @@
 
             <div class="impostazioni-container">
 
-            <div class="invioNotificheContainer" id="canali">
+            <div class="invioNotificheContainer impostazioni-sect" id="canali">
                 <p style="padding-bottom: 10px"><i class="fa-solid fa-message primary-text"></i>
                     <span>Canali notifiche</span>
                 </p>
@@ -410,7 +410,7 @@
                 <% } %>
             </div>
 
-            <div id="variazioni">
+            <div class="impostazioni-sect" id="variazioni" style="padding-bottom: 15px;">
                 <p style="padding-bottom: 10px"><i class="fa-solid fa-message primary-text"></i>
                     <span>Variazioni dell'orario <span style="padding: 2px 6px; background-color: var(--primary); color: var(--on-primary); border-radius: 10px;">in arrivo</span></span>
                 </p>
@@ -427,7 +427,7 @@
                 <p style="font-size: 12px; color: var(--on-surface)">Utile per includere le variazioni con errori di battitura.</p>
             </div>
 
-            <div class="invioNotificheContainer" id="orario" style="position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--on-surface);">
+            <div class="invioNotificheContainer impostazioni-sect" id="orario" style="position: relative; padding-bottom: 10px;">
                 <p style="padding-bottom: 10px; border-bottom: 1px solid var(--on-surface);"><i class="fa-solid fa-clock primary-text"></i>
                     <span>Orario Daily Notification</span>
                 </p>
@@ -565,7 +565,7 @@
 
             </div>
 
-            <button class="btn filled submit-btn my-10px" onclick="loading(1); window.location.href='/logout'"><i class="fa-solid fa-sign-out"></i> Logout</button>
+            <button class="btn filled submit-btn my-10px" style="margin-top: 30px" onclick="loading(1); window.location.href='/logout'"><i class="fa-solid fa-sign-out"></i> Logout</button>
 
             <script>
                 const submitPreferences = () => {
@@ -646,6 +646,7 @@
         <!-- Telegram -->
         <div class="sub-section" id="Telegram">
             <h2><i class="fa-brands fa-telegram"></i> Telegram</h2>
+            <div id="telegram-inner">
             <% if (tgun.charAt(0)==='X' ) { %>
                 <p style="margin-bottom: 20px">Ricevi la notifica tramite messaggio su Telegram.</p>
                 <p>Per essere notificat<span class="user-gender-o-a"></span> su Telegram, manda
@@ -654,15 +655,65 @@
                         id="telegramCode"><code><%= tgun %></code></span>
                 </p>
                 <p>a <b><a href="https://t.me/FermiNotifierBot" target="_blank"
-                            class="link">@FermiNotifierBot</a></b> su
-                    Telegram.</p>
+                            class="link">@FermiNotifierBot</a></b>.</p>
                 <% } else { %>
-                    <p style="margin-bottom: 15px">Il tuo account telegram risulta correttamente collegato! (ID:
-                        <code><%= tgun %></code>)
-                    </p>
-                    <% } %>
+                    
+                        <p style="margin-bottom: 15px">Il tuo account telegram risulta correttamente collegato! (ID:
+                            <code><%= tgun %></code>)
+                        </p>
 
-                    <button class="btn filled" disabled>Disconnetti</button> <p style="color: var(--muted);"><i class="fa-solid fa-triangle-exclamation"></i> temporaneamente disabilitato</p>
+                        <button class="btn filled submit-btn" onclick="disconnectTelegram()">Disconnetti</button>
+                    
+                    <% } %>
+            </div>
+
+            <script>
+                function disconnectTelegram(){
+                    let loading_btn_params = saveBtnParams(2);
+                    loading(2);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/user/telegram-disconnect',
+                        data: JSON.stringify({}),
+                        success: function (data) {
+                            let message = "Account Telegram disconnesso con successo.";
+                            let new_telegram_code = data.new_telegram_code;
+                            if(data.message){
+                                message = data.message;
+                            }
+                            var alert = new AlertBanner("success", message);
+                            alert.show();
+
+                            // print new telegram code
+                            $("#telegram-inner").html("");
+                            const telegramHTML = `
+                                <p style="margin-bottom: 20px">Ricevi la notifica tramite messaggio su Telegram.</p>
+                                <p>Per essere notificat<span class="user-gender-o-a"></span> su Telegram, manda
+                                </p><p onclick="copy()" class="telegramCodeContainer"><i class="fa-solid fa-copy"></i> <span
+                                        id="telegramCode"><code>${new_telegram_code}</code></span></p>
+                                <p>a <b><a href="https://t.me/FermiNotifierBot" target="_blank"
+                                            class="link">@FermiNotifierBot</a></b>.</p>
+                            `;
+                            $("#telegram-inner").html(telegramHTML);
+                            writeUserGender(within="#telegram-inner");
+                        },
+                        error: function (error) {
+                            console.warn(error);
+                            
+                            let message = "Si è verificato un errore. Riprova più tardi.";
+                            if (error.responseJSON && error.responseJSON.message) {
+                                message = error.responseJSON.message;
+                            }
+
+                            var alert = new AlertBanner("error", message);
+                            alert.show();
+                        },
+                        contentType: "application/json",
+                        dataType: 'json'
+                    });
+                    resetLoading(2, loading_btn_params);
+                }
+            </script>
 
         </div>
         <!------------------>

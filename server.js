@@ -433,6 +433,24 @@ app.get("/instagram", (req, res) => {
   res.redirect("https://instagram.com/ferminotify");
 });
 
+app.post("/user/telegram-disconnect", checkNotAuthenticated, async (req, res) => {
+  let user = req.user;
+  let new_telegram_code = await getTelegramTemporaryCode();
+  pool.query(
+    `UPDATE subscribers
+      SET telegram = $1
+      WHERE email = $2;`,
+    [new_telegram_code, user.email],
+    (err, result) => {
+      if (err) {
+        console.error("Error disconnecting Telegram:", err);
+        return res.status(500).json({ success: false, message: "Si è verificato un errore! Riprova più tardi." });
+      }
+      res.status(200).json({ success: true, message: "Account Telegram disconnesso con successo!", new_telegram_code: new_telegram_code });
+    }
+  );
+});
+
 app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
   
   let { user_email } = req.body;

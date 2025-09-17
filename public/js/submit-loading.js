@@ -8,9 +8,17 @@ function loading(n){
 	submitBtn.innerHTML = "<div class='submit-lds-grid'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
 }
 
-function resetLoading(n, originalHTML, params){
+function resetLoading(n, params){
 	var submitBtn = document.getElementsByClassName("submit-btn")[n];
 	submitBtn.style.width = params.width;
 	submitBtn.style.height = params.height;
-	submitBtn.innerHTML = originalHTML;
+	submitBtn.innerHTML = params.html;
+}
+
+function saveBtnParams(n){
+	var submitBtn = document.getElementsByClassName("submit-btn")[n];
+	var html = submitBtn.innerHTML;
+	var width = submitBtn.style.width;
+	var height = submitBtn.style.height;
+	return {html: html, width: width, height: height};
 }

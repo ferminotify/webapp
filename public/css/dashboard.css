@@ -86,9 +86,14 @@
 }
 
 .impostazioni-container{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
+    column-count: 2;
+    column-gap: 40px;
+}
+
+.impostazioni-container .impostazioni-sect{
+    break-inside: avoid;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--on-surface);
 }
 
 .user-info-container{
@@ -181,11 +186,6 @@
     padding: 10px 0;
     border-top: 1px solid var(--on-surface);
 }
-
-.invioNotificheContainer .checkNot-container:last-child {
-    border-bottom: 1px solid var(--on-surface);
-}
-
 
 /* REPORT PROBLEM */
 .reportProblem{
