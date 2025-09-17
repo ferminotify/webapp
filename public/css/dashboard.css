@@ -103,8 +103,11 @@
 }
 @media screen and (max-width: 1050px){
     .impostazioni-container{
-        grid-template-columns: 1fr;
-        gap: 0px;
+        columns: 1;
+        column-gap: 0px;
+    }
+    .impostazioni-container .impostazioni-sect:last-child{
+        margin-bottom: 0px;
     }
     .user-info-container{
         grid-template-columns: 1fr;
