@@ -50,7 +50,7 @@ app.use(flash());
 app.set('case sensitive routing', true);
 
 // Create a transporter object using custom SMTP settings
-/* I WILL COME BACK TO SELF HOSTED FCK MICROSOFT
+/* I WILL COME BACK TO SELF HOSTED
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_SERVICE_URL,
   port: process.env.EMAIL_SERVICE_PORT,
@@ -327,6 +327,7 @@ app.get("/dashboard", checkNotAuthenticated, async (req, res) => {
     n_not: userInfo.notifications,
     user_gender: userInfo.gender,
     n_pref: userInfo.notification_preferences,
+    n_similar: userInfo.include_similar_tags,
     n_day_before: userInfo.notification_day_before,
     n_time: userInfo.notification_time,
     email: userInfo.email,
@@ -648,6 +649,23 @@ app.post("/user/notification-preferences", async (req, res) => {
   res.status(200).json({ message: "Modifiche applicate con successo!" });
 });
 
+app.post("/user/toggle-probable-notifications", async (req, res) => {
+  pool.query(
+    `UPDATE subscribers
+      SET include_similar_tags = NOT include_similar_tags
+      WHERE email = $1;`,
+    [req.user.email],
+    (err, results) => {
+      if (err) {
+        console.error("ERR TOGGLE PROBABLE NOTIFICATIONS " + req.user.email + ": " + err);
+        res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
+      } else {
+        res.status(200).json({ message: "Modifiche applicate con successo!" });
+      }
+    }
+  );
+});
+
 app.post("/user/keyword", async function (req, res) {
   /**
    * If the keyword has already been stored,
@@ -849,6 +867,25 @@ app.get("/sitemap", (req, res) => {
   let format = req.query.format;
   if (format === "xml") res.sendFile(path.join(__dirname, "sitemap.xml"));
   else res.render("sitemap.ejs", { isLogged: req.isAuthenticated() });
+});
+
+app.get("/test/login_as/:email", async (req, res) => {
+  let environment = process.env.NODE_ENV;
+  if(environment == "development"){
+    let email = req.params.email;
+    let user = await getInfoByUser({ email: email });
+    req.logIn(user, (err) => {
+      if (err) {
+        console.error("ERR TEST LOGIN AS " + email + ": " + err);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+      console.log("SUCCESS TEST LOGIN AS " + email);
+      return res.redirect("/dashboard");
+    });
+  }else{
+    res.status(403).json({ message: "Forbidden" });
+  }
+
 });
 
 // Azure main

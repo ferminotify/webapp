@@ -410,16 +410,16 @@
                 <% } %>
             </div>
 
-            <div class="impostazioni-sect" id="variazioni" style="padding-bottom: 15px;">
+            <div class="impostazioni-sect invioNotificheContainer" id="variazioni" style="padding-bottom: 15px;">
                 <p style="padding-bottom: 10px"><i class="fa-solid fa-bell primary-text"></i>
-                    <span>Variazioni dell'orario <span style="padding: 2px 6px; background-color: var(--primary); color: var(--on-primary); border-radius: 10px;">in arrivo</span></span>
+                    <span>Variazioni dell'orario</span>
                 </p>
                 <div class="checkNot-container sendEmail" style="display: flex; align-items: flex-start;">
                     Invia variazioni probabili
                     <label class="switch">
-                        <input type="checkbox" checked class="checkbox"
-                            onclick="" disabled>
-                        <span class="slider round" style="background-color: var(--muted);"></span>
+                        <input id="sendSimilar" type="checkbox" class="checkbox"
+                            onclick="submitSimilar()">
+                        <span class="slider round"></span>
                     </label>
                 </div>
                 <p style="font-size: 12px; color: var(--on-surface)">Ricevi notifiche anche delle variazioni dell'orario che potrebbero essere associate alle tue keyword.</p>
@@ -595,50 +595,80 @@
                         dataType: 'json'
                     });
                 }
+                var n_similar = <%= n_similar %>;
+                function submitSimilar() {
+                    // toggle
+                    $.ajax({
+                        type: 'POST',
+                        url: '/user/toggle-probable-notifications',
+                        success: function (data) { 
+                            n_similar = !n_similar;
+                        },
+                        error: function (error) {
+                            console.warn(error);
+                            var alert = new AlertBanner("error", "Si è verificato un errore. Riprova più tardi.");
+                            alert.show();
+                            // revert checkbox
+                            document.querySelector("#variazioni .checkbox").checked = n_similar;
+                        },
+                        contentType: "application/json",
+                        dataType: 'json'
+                    });
+                }
             </script>
 
             <script>
-                let preferencesId = <%= n_pref %>;
-                let tg = "<%= tgun.charAt(0) %>" != 'X';
-                if (tg) {
-                    switch (preferencesId) {
-                        case 3:
-                            document.getElementById("sendTelegram").checked = true;
-                            document.getElementById("sendEmail").checked = true;
-                            break;
-                        case 2:
-                            document.getElementById("sendTelegram").checked = false;
-                            document.getElementById("sendEmail").checked = true;
-                            break;
-                        case 1:
-                            document.getElementById("sendTelegram").checked = true;
-                            document.getElementById("sendEmail").checked = false;
-                            break;
-                        case 0:
-                            document.getElementById("sendTelegram").checked = false;
-                            document.getElementById("sendEmail").checked = false;
-                            break;
-                        default:
-                            console.log("Merda.");
+                $(document).ready(function() {   
+                    let preferencesId = <%= n_pref %>;
+                    let tg = "<%= tgun.charAt(0) %>" != 'X';
+                    if (tg) {
+                        switch (preferencesId) {
+                            case 3:
+                                document.getElementById("sendTelegram").checked = true;
+                                document.getElementById("sendEmail").checked = true;
+                                break;
+                            case 2:
+                                document.getElementById("sendTelegram").checked = false;
+                                document.getElementById("sendEmail").checked = true;
+                                break;
+                            case 1:
+                                document.getElementById("sendTelegram").checked = true;
+                                document.getElementById("sendEmail").checked = false;
+                                break;
+                            case 0:
+                                document.getElementById("sendTelegram").checked = false;
+                                document.getElementById("sendEmail").checked = false;
+                                break;
+                            default:
+                                console.log("Merda.");
+                        }
+                    } else {
+                        switch (preferencesId) {
+                            case 3:
+                                document.getElementById("sendEmail").checked = true;
+                                break;
+                            case 2:
+                                document.getElementById("sendEmail").checked = true;
+                                break;
+                            case 1:
+                                document.getElementById("sendEmail").checked = false;
+                                break;
+                            case 0:
+                                document.getElementById("sendEmail").checked = false;
+                                break;
+                            default:
+                                console.log("Merda.");
+                        }
                     }
-                } else {
-                    switch (preferencesId) {
-                        case 3:
-                            document.getElementById("sendEmail").checked = true;
-                            break;
-                        case 2:
-                            document.getElementById("sendEmail").checked = true;
-                            break;
-                        case 1:
-                            document.getElementById("sendEmail").checked = false;
-                            break;
-                        case 0:
-                            document.getElementById("sendEmail").checked = false;
-                            break;
-                        default:
-                            console.log("Merda.");
+                    
+                    if (n_similar) {
+                        document.querySelector("#variazioni #sendSimilar").checked = true;
+                    } else {
+                        document.querySelector("#variazioni #sendSimilar").checked = false;
                     }
-                }
+                });
+
+
             </script>
         </div>
         <!------------------>
