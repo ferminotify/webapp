@@ -152,14 +152,13 @@
                             <li class="keyword" data-keyword="<%= kw %>" onclick="deleteKeyword(this)">
                                 <span class="keyword-list-bullet"><i class="fa-solid fa-square"></i></span>
                                 <%= kw %>
-                                <span class="<%= kw.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_-]/g, '') %>-similar alert-similar-kw"></span>
+                                <span class="alert-similar-kw"></span>
                             </li>
                         <% }) %>
                     <% } %>
                 </ul>
 
                 <script>
-                    // TODO c'è un bug che non riesco a replicare: stampa "forse intendevi..." sia nella kw giusta sia in quella sbagliata. es. kw = [5 CIIN, 5CIIN] --> "forse intendevi 5CIIN" nella kw 5 CIIN perché in 5CIIN è preso come 5CIIN FORSE IN... IDK
                     function findSimilarKeywords(){
                         const keywords = Array.from(document.querySelectorAll(".keyword")).map(li => li.dataset.keyword);
 
@@ -170,7 +169,7 @@
                                 if(!data || !data[0] || !data[0]["name"]) return;
                                 if (data[0]["name"] && !keywords.includes(data[0]["name"])) {
                                     console.log(kw, "-->", data[0]["name"]);
-                                    const similarEl = document.querySelector(`.${CSS.escape(kw.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_-]/g, ''))}-similar`);
+                                    const similarEl = document.querySelector(`.keyword[data-keyword='${kw}'] .alert-similar-kw`);
                                     similarEl.style.display = "inline";
                                     similarEl.innerHTML = `<i class="fa-solid fa-circle-info"></i> forse intendevi <span class='proposed-kw'>${data[0]["name"]}</span>? <a onclick="addKeyword('${data[0]["name"]}')" class="btn text">Aggiungi</a>`;
                                 }
@@ -264,10 +263,12 @@
                     $(kw_del).remove();
                     $.ajax({
                         type: 'POST',
-                        url: '/user/keyword',
-                        data: JSON.stringify({keyword: $(kw_del).text()}),
+                        url: '/user/keyword/delete',
+                        data: JSON.stringify({keyword: kw_del.dataset.keyword}),
                         success: function (data) { /*alert('data: ' + data);*/ },
                         error: function (error) {
+                            var alert = new AlertBanner("error", "Si è verificato un errore. Riprova più tardi.");
+                            alert.show();
                             console.warn(error);
                         },
                         contentType: "application/json",
@@ -294,7 +295,7 @@
                         <li class="keyword" data-keyword="${kw_add}" onclick="deleteKeyword(this)">
                             <span class="keyword-list-bullet"><i class="fa-solid fa-square"></i></span>
                             ${kw_add}
-                            <span class="${normalizedClass}-similar alert-similar-kw"><i class="fa-solid fa-circle-info"></i></span>
+                            <span class="alert-similar-kw"><i class="fa-solid fa-circle-info"></i></span>
                         </li>
                     `);
 
@@ -312,7 +313,7 @@
                     
                     $.ajax({
                         type: 'POST',
-                        url: '/user/keyword',
+                        url: '/user/keyword/add',
                         data: JSON.stringify({ keyword: kw_add }),
                         success: function (data) {},
                         error: function (error) {
@@ -758,7 +759,7 @@
             <div>
                 <label>Nome</label>
                 <div class="flex-y-center">
-                    <input type="text" autocomplete="off" name="firstname" placeholder="<%= user_firstname %>" class="dashboard-input" disabled required maxlength="50">
+                    <input type="text" autocomplete="off" name="firstname" placeholder="" class="dashboard-input" disabled required maxlength="50">
                     <div class="dashboard-edit-btn-container">
                         <div class="dashboard-toEdit-btns dashboard-toEdit-btns-firstname flex-y-center" style="gap: 10px">
                             <a class="btn text info-edit-btn-firstname" onclick="editInfo('firstname')"><i class="fa-solid fa-pen"></i></a>
@@ -774,7 +775,7 @@
             <div>
                 <label>Cognome</label>
                 <div class="flex-y-center">
-                    <input type="text" autocomplete="off" name="lastname" placeholder="<%= user_lastname %>" class="dashboard-input" disabled required maxlength="50">
+                    <input type="text" autocomplete="off" name="lastname" placeholder="" class="dashboard-input" disabled required maxlength="50">
                     <div class="dashboard-edit-btn-container">
                         <div class="dashboard-toEdit-btns dashboard-toEdit-btns-lastname flex-y-center">
                             <a class="btn text info-edit-btn-lastname" onclick="editInfo('lastname')"><i class="fa-solid fa-pen"></i></a>
@@ -787,6 +788,12 @@
                     </div>
                 </div>
             </div>
+            <script>
+                $(document).ready(function() {
+                    $('input[name="firstname"]').attr('placeholder', USER_FIRSTNAME);
+                    $('input[name="lastname"]').attr('placeholder', USER_LASTNAME);
+                });
+            </script>
             <div class="gender">
                 <label for="Gender">Genere</label>
                 <div class="flex-y-center">
@@ -1094,17 +1101,12 @@
 
         // get keywords from front end list
         function getKeywords(){
-            var tempArray = [];
-            $(".keyword").each(function () {
-                // remoce spaces unless it's between words
-                tempArray.push($(this).text().replace(/\s+/g, ' ').trim());
-            });
-            return tempArray;
+            return Array.from(document.querySelectorAll(".keyword")).map(li => li.dataset.keyword);
         }
         
         var keywords = getKeywords();
 
-        if(keywords.length == 0) $(".keyword-edit-btn").hide();
+        //if(keywords.length == 0) $(".keyword-edit-btn").hide();
         
         var eventRunning;
 

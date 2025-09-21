@@ -666,59 +666,47 @@ app.post("/user/toggle-probable-notifications", async (req, res) => {
   );
 });
 
-app.post("/user/keyword", async function (req, res) {
-  /**
-   * If the keyword has already been stored,
-   * has to be removed.
-   * If the keyword is not stored yet,
-   * has to be appended.
-   */
+app.post("/user/keyword/add", async function (req, res) {
   let sentKeyword = req.body.keyword;
-  let userKeywords = await getUserKeywordsByEmail(req.user.email);
 
   sentKeyword = sentKeyword.trim(); // remove spaces from start, end
   sentKeyword = sentKeyword.toUpperCase(); // set all to uppercase
 
-  let occurrences = 0;
-  if(userKeywords != null){
-    userKeywords.forEach(kw => {
-      if(kw==sentKeyword) {
-        occurrences=occurrences+1;
+  pool.query(
+    `UPDATE subscribers
+      SET tags = array_append(tags, $1)
+      WHERE email = $2;`,
+    [sentKeyword, req.user.email],
+    (err, results) => {
+      if (err) {
+        console.error("ERR ADD KW " + req.user.email + ": " + err);
+        res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
+        throw err;
       }
-    });
-  }
-
-  if(occurrences>0){
-    pool.query(
-      `UPDATE subscribers
-        SET tags = array_remove(tags, $1)
-        WHERE email = $2;`,
-      [sentKeyword, req.user.email],
-      (err, results) => {
-        if (err) {
-          console.error("ERR DEL KW " + req.user.email + ": " + err);
-          res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
-          throw err;
-        }
-      }
-    );
-  } else {
-    pool.query(
-      `UPDATE subscribers
-        SET tags = array_append(tags, $1)
-        WHERE email = $2;`,
-      [sentKeyword, req.user.email],
-      (err, results) => {
-        if (err) {
-          console.error("ERR ADD KW " + req.user.email + ": " + err);
-          res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
-          throw err;
-        }
-      }
-    );
-  }
+    }
+  );
 
   res.status(200).json({ message: sentKeyword + " aggiunto!" });
+});
+
+app.post("/user/keyword/delete", async function (req, res) {
+  let sentKeyword = req.body.keyword;
+
+  pool.query(
+    `UPDATE subscribers
+      SET tags = array_remove(tags, $1)
+      WHERE email = $2;`,
+    [sentKeyword, req.user.email],
+    (err, results) => {
+      if (err) {
+        console.error("ERR DEL KW " + req.user.email + ": " + err);
+        res.status(400).json({ message: "Si è verificato un errore! Riprova più tardi." });
+        throw err;
+      }
+    }
+  );
+
+  res.status(200).json({ message: sentKeyword + " rimosso!" });
 });
 
 app.post("/user/edit", async function (req, res) {
