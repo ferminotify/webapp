@@ -566,7 +566,47 @@
 
             </div>
 
-            <button class="btn filled submit-btn my-10px" style="margin-top: 30px" onclick="loading(1); window.location.href='/logout'"><i class="fa-solid fa-sign-out"></i> Logout</button>
+            <div style="display: flex; align-items: center;">
+
+                <button class="btn filled submit-btn" style="margin-top: 30px;" onclick="loading(1); window.location.href='/logout'"><i class="fa-solid fa-sign-out"></i> Logout</button>
+
+                <button class="btn outlined submit-btn" style="border-color: var(--error); margin: 30px 0 0 15px; color: var(--error)" onclick=" showDeleteAccountModal();"><i class="fa-solid fa-warning"></i> Elimina il mio account</button>
+                
+                <script>
+                    let params = null;
+                    function showDeleteAccountModal(){
+                        params = saveBtnParams(2);
+                        loading(2);
+                        let delete_account_modal_html = `
+                        <div class="modal-bg" id="deleteAccountModal">
+                            <div class="modal">
+                                <div class="modal-inner">
+                                    <p class="icon"><i class="fa-solid fa-triangle-exclamation"></i></p>
+                                    <h2 class="title">Conferma eliminazione account</h2>
+                                    <p class="desc">Sei sicuro di voler eliminare il tuo account?</p>
+                                    <div class="btn-container">
+                                        <a class="btn text" onclick="hideDeleteAccountModal()">Annulla</a>
+                                        <a class="btn filled" href="/delete-account">Conferma</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                        $("body").append(delete_account_modal_html);
+                        requestAnimationFrame(() => {
+                            $("#deleteAccountModal").addClass("active");
+                            $("#deleteAccountModal .modal").addClass("active");
+                        });
+                    }
+                    function hideDeleteAccountModal(){
+                        $("#deleteAccountModal").addClass("closing");
+                        setTimeout(() => {
+                            $("#deleteAccountModal").fadeOut(250, function() { $(this).remove(); });
+                            resetLoading(2, params);
+                        }, 250);
+                    }
+                </script>
+
+            </div>
 
             <script>
                 const submitPreferences = () => {
@@ -701,7 +741,7 @@
             <script>
                 function disconnectTelegram(){
                     let loading_btn_params = saveBtnParams(2);
-                    loading(2);
+                    loading(3);
                     $.ajax({
                         type: 'POST',
                         url: '/user/telegram-disconnect',
@@ -742,7 +782,7 @@
                         contentType: "application/json",
                         dataType: 'json'
                     });
-                    resetLoading(2, loading_btn_params);
+                    resetLoading(3, loading_btn_params);
                 }
             </script>
 

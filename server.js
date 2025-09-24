@@ -434,6 +434,17 @@ app.get("/instagram", (req, res) => {
   res.redirect("https://instagram.com/ferminotify");
 });
 
+app.get("/delete-account", checkNotAuthenticated, (req, res) => {
+  res.render("delete_account.ejs", { isLogged: true, user_email: req.user.email });
+});
+
+app.get("/delete-survey", (req, res) => {
+  if(req.isAuthenticated()){
+    return res.redirect("/dashboard");
+  }
+  res.render("delete_survey.ejs", { isLogged: false });
+});
+
 app.post("/user/telegram-disconnect", checkNotAuthenticated, async (req, res) => {
   let user = req.user;
   let new_telegram_code = await getTelegramTemporaryCode();

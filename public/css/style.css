@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Source+Code+Pro:wght@500&display=swap');
 
+:root{
+	--default-border-radius: 25px;
+	--cubic-bezier-accelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+	--cubic-bezier-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+}
+
 * {
 	font-family: 'Montserrat', sans-serif;
 }
@@ -156,41 +162,6 @@ a.btn.outlined:hover, button.btn.outlined:hover{
 }
 .link:hover{
 	color: var(--primary-text-hover);
-}
-
-.btn-container{
-	position: sticky;
-	top: 0;
-	margin-top: 15px;
-	text-align: center;
-	margin-bottom: 50px;
-	display: grid;
-	grid-auto-columns: 1fr;
-	grid-auto-flow: column;
-	background-color: var(--surface-variant);
-	color: var(--on-surface-variant);
-	border-radius: 40px;
-	transition: all 0.3s ease-in-out;
-	z-index: 10;
-}
-.btn-container.sticked{
-	transform: translateY(-3px) scale(0.9);
-}
-.btn-container .tab{
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 25px 10px;
-	border-radius: 40px;
-	font-weight: 600;
-}
-.btn-container .tab:hover{
-	background: var(--surface-variant-hover-bg);
-}
-.btn-container .tab.active{
-	background-color: var(--primary);
-	color: var(--on-primary);
-	border-radius: 40px;
 }
 
 /******/
@@ -476,6 +447,81 @@ code, .mono{
 .main .material-symbols-outlined{
 	font-size: 1rem;
 }
+
+.modal-bg{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	z-index: 1000;
+	visibility: hidden;
+	background-color: rgba(0, 0, 0, 0);
+	transition: background-color 0.3s var(--cubic-bezier-decelerate);
+}
+
+.modal-bg.active{
+	visibility: visible;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal{
+	position: relative;
+	color: var(--on-surface);
+	background-color: var(--surface);
+	border-top-left-radius: var(--default-border-radius);
+	border-top-right-radius: var(--default-border-radius);
+	max-width: 600px;
+	width: 100%;
+	box-sizing: border-box;
+	transform: translateY(+100%);
+	transition: transform 350ms var(--cubic-bezier-decelerate);
+}
+
+.modal-bg.closing .modal {
+  transition: transform 250ms var(--cubic-bezier-accelerate);
+  transform: translateY(100%);
+}
+
+.modal.active{
+	transform: translateY(0);
+}
+
+.modal-inner{
+	padding: 30px 35px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	box-sizing: border-box;
+}
+
+.modal .modal-inner .close{
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	cursor: pointer;
+}
+
+.modal .modal-inner .icon{
+	text-align: center;
+}
+
+.modal .modal-inner .title{
+	margin: 0;
+	text-align: center;
+}
+
+.modal .modal-inner .btn-container{
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 20px;
+}
+
 
 .rounded-container{
 	width: 100%;
