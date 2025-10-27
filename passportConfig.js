@@ -43,7 +43,7 @@ function initialize(passport) {
         } else {
           // No user
           return done(null, false, {
-            message: "Non sono registrati utenti con le email " + email + "."
+            message: "Non ci sono utenti registrati con l'email " + email + ". Crea un account <a href='/register' style='text-decoration: underline'>qui</a>.",
           });
         }
       }

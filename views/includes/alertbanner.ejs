@@ -5,7 +5,7 @@
 	<% } %>
 	<% if(messages.error_msg) { %>
 		<% messages.error_msg.forEach(error => { %>
-			generateAlert("error", "<%= error %>");
+			generateAlert("error", "<%- error %>");
 		<% }) %>
 	<% } %>
 	<% if(messages.info_msg) { %>

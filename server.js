@@ -197,7 +197,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING id, unsub_token, notification_preferences, email`,
           [name, surname, email, hashedPassword, -1, telegramTemporaryCode, gender, 2],
-          (err, results) => {
+          async (err, results) => {
             if (err) {
               console.error("ERR REGISTER [2] " + email + ": " + err);
               req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${err.message})`);
@@ -207,7 +207,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
 
               // send email
               try{
-                sendMail(
+                await sendMail(
                   to = email,
                   subject = `Conferma la registrazione`,
                   html = `<!doctype html><html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Ciao ${name}!</h2><tr><td style=text-align:left><p style=line-height:1.3>Per completare la registrazione, conferma il tuo indirizzo email:<tr><td style="padding:15px 0"><a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style="font-size:14px;letter-spacing:1.2px;padding:13px 17px;font-weight:600;background-color:#004a77;border-radius:10px;color:#fff;text-decoration:none"target=_blank>Conferma email</a><tr><td style=text-align:left><p style=line-height:1.3>Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo.<tr><td style=text-align:left><p style=line-height:1.3>A presto!</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Il bottone non funziona? Conferma l'email attraverso il seguente link: <a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style=color:#004a77 target=_blank>https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}</a>.<p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px alt="Fermi Notify"></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a <i>Fermi Notify</i>. Se non sei stato tu, ignora questa email.</table></main><html>`,
@@ -218,7 +218,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
                 );
                 req.flash("success_msg", "Ti abbiamo inviato una mail per confermare l'account! (controlla anche lo SPAM)");
               } catch (err) {
-                console.error("ERR REGISTER [3] " + email + ": " + error);
+                console.error("ERR REGISTER [3] " + email + ": " + err);
                   
                 // delete record from db
                 pool.query(`DELETE FROM subscribers WHERE id = $1`, [results.rows[0].id], (err) => {
@@ -230,7 +230,7 @@ app.post("/users/register", checkAuthenticated, async (req, res) => {
                   return;
                 });
 
-                req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${error.message})`);
+                req.flash("error_msg", `Si è verificato un errore! Riprova più tardi. (${err.message})`);
               }
 
             }
@@ -258,7 +258,10 @@ function saveReturnTo(req, res, next) {
   if (req.session.returnTo) res.locals.returnTo = req.session.returnTo; // Store it temporarily in `res.locals`
   next();
 }
-app.post("/login", saveReturnTo, (req, res, next) => {
+app.post("/login", function(req, res, next) {
+  console.log("[" + req.get('host') + "] POST /login: " + req.body.email);
+  next();
+}, saveReturnTo, (req, res, next) => {
   passport.authenticate("local", async (err, user, info) => {
     if (err) {
       req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
@@ -270,6 +273,10 @@ app.post("/login", saveReturnTo, (req, res, next) => {
       // authentication failed
       if(info.confirm == false){
         let userInfo = await getUserInfoByEmail(req.body.email, ["name", "telegram", "notifications", "gender"]);
+        if (!userInfo) {
+          req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+          return res.redirect("/login");
+        }
         let name = userInfo.name;
         let telegramTemporaryCode = userInfo.telegram;
         let notifications = userInfo.notifications;
@@ -278,7 +285,7 @@ app.post("/login", saveReturnTo, (req, res, next) => {
         if (notifications < 0) {
           // resend email
           try{
-            sendMail(
+            await sendMail(
               to = email,
               subject = `Conferma la registrazione`,
               html = `<!doctype html><html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Ciao ${name}!</h2><tr><td style=text-align:left><p style=line-height:1.3>Per completare la registrazione, conferma il tuo indirizzo email:<tr><td style="padding:15px 0"><a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style="font-size:14px;letter-spacing:1.2px;padding:13px 17px;font-weight:600;background-color:#004a77;border-radius:10px;color:#fff;text-decoration:none"target=_blank>Conferma email</a><tr><td style=text-align:left><p style=line-height:1.3>Appena completerai la registrazione, ti arriverà una seconda email con tutte le indicazioni sull'utilizzo.<tr><td style=text-align:left><p style=line-height:1.3>A presto!</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Il bottone non funziona? Conferma l'email attraverso il seguente link: <a href=https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode} style=color:#004a77 target=_blank>https://fn.lkev.in/users/register/confirmation/${telegramTemporaryCode}</a>.<p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px alt="Fermi Notify"></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a <i>Fermi Notify</i>. Se non sei stato tu, ignora questa email.</table></main><html>`,
@@ -374,7 +381,7 @@ app.get("/users/register/confirmation/:id", async (req, res, next) => {
 
   // send welcome email
   try{
-	sendMail(
+	await sendMail(
 		to = email,
 		subject = `Welcome!`,
 		html = `<!doctype html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table border=0 cellpadding=0 cellspacing=0 style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table border=0 cellpadding=0 cellspacing=0 style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"><tr><td><h2 style="margin:10px 0">Benvenut${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify!</h2><tr><td style=text-align:left><h4 style=margin-bottom:0>Ciao ${name}!</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Grazie per esserti registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"}, di seguito ci sono alcune indicazioni sul funzionamento di Fermi Notify.<h4 style=margin-bottom:0>Keyword</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a> potrai inserire le tue <b>keyword</b>, necessarie per trovare le variazioni dell'orario che ti riguardano. Ti invitiamo ad aggiungere le parole che riconducono a te (il tuo cognome, la tua classe, i tuoi corsi, ecc...).<br>Presta attenzione alla <b>formattazione</b> delle keywords, dev'essere uguale a quella scritta nel calendario giornaliero (es. <i>4CIIN</i>, non "4 CIIN" o "4CIN")!<h4 style=margin-bottom:0>Notifiche</h4><p style=line-height:1.3;margin-top:10px;margin-bottom:10px>Vengono inviate notifiche sulle variazioni che contengono le tue keyword tramite email e/o Telegram. Puoi modificare le preferenze sulle notifiche nella <a href=https://fn.lkev.in/dashboard style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>Dashboard</a>.<ul style=padding-top:0;line-height:1.3;margin-top:0><li>Se c'è una variazione dell'orario, riceverai una notifica che riassume tutte le variazioni della giornata alle <b>6 del giorno stesso</b>.<li>Se viene pubblicata una variazione dell'orario poche ore prima che si verifichi (es. sostituzione dell'ultimo minuto), verrai notificat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} <b>all'istante</b>.</ul><p style=margin-top:10px;margin-bottom:10px>Per maggiori informazioni, visita la <a href=https://fn.lkev.in/faq style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>FAQ</a>.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src=https://fn.lkev.in/email/v3/icon-allmuted.png style=height:35px;margin-bottom:5px alt="Fermi Notify"></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrat${gender == "M" ? "o" : gender == "F" ? "a" : "ə"} a Fermi Notify. Puoi disattivare le notifiche via mail <a href="https://fn.lkev.in/user/unsubscribe?id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${email}" style="color:#004a77;text-decoration:none;border-bottom:1px solid #004a77"target=_blank>qui</a>.</table></main>`,
@@ -465,17 +472,29 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
 
 
   let name = await getFirstNameByEmail(user_email);
+  if (!name) {
+    req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+    console.error("ERR REQ CHANGE PSW NAME NOT FOUND " + user_email);
+    res.redirect("/password_reset");
+    return;
+  }
 
   const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 char long
 
   let unsub_info = await getUnsubscribeInfoByEmail(user_email);
+  if (!unsub_info) {
+    req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
+    console.error("ERR REQ CHANGE PSW UNSUB INFO NOT FOUND " + user_email);
+    res.redirect("/password_reset");
+    return;
+  }
   
   pool.query(
     `UPDATE subscribers
       SET secret_temp = $1, secret_temp_timestamp = CURRENT_TIMESTAMP
       WHERE email = $2;`,
     [randomCode, user_email],
-    (err, result) => {
+    async (err, result) => {
       if (err) {
         req.flash("error_msg", "Si è verificato un errore! Riprova più tardi.");
         console.error("ERR REQ CHANGE PSW QUERY " + user_email + ": " + err);
@@ -483,7 +502,7 @@ app.post("/user/request-change-password", async (req, res) => { // PWD-CNG #1
         return;
       }
     try{
-        sendMail(
+        await sendMail(
           to = user_email,
           subject = `Codice di sicurezza OTP [${randomCode}]`,
           html = `<!doctype html><html><main style="font-family:Helvetica,Arial,Liberation Serif,sans-serif;background-color:#fff;color:#000"><table style="max-width:620px;border-collapse:collapse;margin:0 auto 0 auto;text-align:left;font-family:Helvetica,Arial,Liberation Serif,sans-serif"border=0 cellpadding=0 cellspacing=0 width=620px><tr style=background-color:#fff><td style="width:100%;padding:30px 7% 15px 7%"><a href=https://fn.lkev.in><img src="https://fn.lkev.in/email/v3/logo-long-allmuted-trasp.png" style=width:70%;height:auto;color:#fff alt="FERMI NOTIFY"></a><tr style=background-color:#fff><td><table style="width:100%;background-color:#fff;padding:30px 7% 30px 7%;border:none;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:16px"border=0 cellpadding=0 cellspacing=0><tr><td><h2 style="margin:10px 0">Il tuo codice di sicurezza</h2><tr><td style=text-align:left><p style=margin-bottom:0>Ciao ${name},<p style=line-height:1.3;margin-top:10px;margin-bottom:10px>il tuo <b>codice di sicurezza OTP</b> è:<table style="margin-left:auto;margin-right:auto;padding:5px 0;text-align:center;border-radius:10px"><tr><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[0]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[1]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[2]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[3]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[4]}</h1><td><h1 style=margin:0;text-align:center;width:30px;font-size:24px>${randomCode[5]}</h1></table><tr><td style=font-size:13px;text-align:center><p style=margin-bottom:15px>Il codice scadrà tra <b>15 minuti</b>.<br>Ti inviamo questo codice perché hai richiesto di cambiare la password del tuo account. Se non hai richiesto di cambiare la password, puoi ignorare questa email.</table><tr style=background-color:#fff><td style="padding:15px 7% 30px 7%;font-size:13px;position:relative;background-color:#fff"><p style=color:#8b959e>Per supporto o informazioni, consulta la <a href=https://fn.lkev.in/faq style=color:#004a77>FAQ</a> o contattaci su Instagram <a href=https://instagram.com/ferminotify style=color:#004a77><i>@ferminotify</i></a>.</p><a href=https://fn.lkev.in><img src="https://fn.lkev.in/email/v3/icon-allmuted.png" style=height:35px;margin-bottom:5px></a><p style=margin:0;color:#8b959e><i style=color:#8b959e>Fermi Notify Team</i><p style=margin-top:0><a href=https://fn.lkev.in style=color:#004a77 target=_blank>fn.lkev.in</a><p style=color:#8b959e;font-size:12px>Hai ricevuto questa email perché ti sei registrato a Fermi Notify. Puoi disattivare le notifiche via mail <a href="https://fn.lkev.in/user/unsubscribe?id=${unsub_info.id}&token=${unsub_info.unsub_token}&email=${user_email}" style=color:#004a77>qui</a>.</table></main><html>`,
@@ -903,7 +922,7 @@ async function sendMail(to, subject, html, plainText, headers = {}) {
     const poller = await EmailCl.beginSend(message);
 
     if (!poller.getOperationState().isStarted) {
-      throw "ERR Poller was not started."
+      throw new Error("Poller was not started");
     }
 
     //let timeElapsed = 0;
@@ -919,13 +938,18 @@ async function sendMail(to, subject, html, plainText, headers = {}) {
       }*/
     }
 
-    if(poller.getResult().status === "Succeeded") {
-      console.log(`SUCCESS sent email (operation id: ${poller.getResult().id}) to ${to}`);
+    const result = poller.getResult();
+    if (!result) {
+      throw new Error("Poller result is undefined");
+    }
+
+    if(result.status === "Succeeded") {
+      console.log(`SUCCESS sent email (operation id: ${result.id}) to ${to}`);
     } else {
-      throw "ERR" + poller.getResult().error;
+      throw new Error(result.error || "Email send failed");
     }
   } catch (e) {
-    throw "ERR" + e;
+    throw new Error("ERR: " + (e.message || e));
   }
 }
 
@@ -934,7 +958,8 @@ async function getUnsubscribeInfoByEmail(email){
   try {
     const RES = await pool.query(
       `SELECT id, unsub_token, notification_preferences FROM subscribers
-        WHERE email = '${email}'`,
+        WHERE email = $1`,
+      [email]
     )
     return RES.rows[0];
   } catch (err) {
@@ -948,7 +973,8 @@ async function getFirstNameByUser(user){
   try {
     const RES = await pool.query(
       `SELECT name FROM subscribers
-        WHERE email = '${user.email}'`,
+        WHERE email = $1`,
+      [user.email]
     );
     return RES.rows[0].name;
   } catch (err) {
@@ -960,7 +986,8 @@ async function getFirstNameByEmail(email){
   try{
     const RES = await pool.query(
       `SELECT name FROM subscribers
-        WHERE email = '${email}'`,
+        WHERE email = $1`,
+      [email]
     );
     return RES.rows[0].name;
   } catch (err) {
@@ -972,7 +999,8 @@ async function getLastNameByEmail(email){
   try{
     const RES = await pool.query(
       `SELECT surname FROM subscribers
-        WHERE email = '${email}'`,
+        WHERE email = $1`,
+      [email]
     );
     return RES.rows[0].surname;
   } catch (err) {
@@ -984,7 +1012,8 @@ async function getGenderByEmail(email){
   try {
     const RES = await pool.query(
       `SELECT gender FROM subscribers
-        WHERE email = '${email}'`,
+        WHERE email = $1`,
+      [email]
     );
     return RES.rows[0].gender;
   } catch (err) {
@@ -997,7 +1026,8 @@ async function getInfoByUser(user){
   try {
     const RES = await pool.query(
       `SELECT * FROM subscribers
-        WHERE email = '${user.email}'`,
+        WHERE email = $1`,
+      [user.email]
     );
     return RES.rows[0];
   } catch (err) {
@@ -1009,7 +1039,8 @@ async function userExistsByEmail(email){
   try {
     const RES = await pool.query(
       `SELECT * FROM subscribers
-        WHERE email = '${email}'`,
+        WHERE email = $1`,
+      [email]
     );
     return RES.rows.length > 0;
   } catch (err) {
@@ -1021,7 +1052,8 @@ async function userEmailMatchesOTP(email, otp){
   try {
     const RES = await pool.query(
       `SELECT * FROM subscribers
-        WHERE email = '${email}' AND secret_temp = '${otp}'`,
+        WHERE email = $1 AND secret_temp = $2`,
+      [email, otp]
     );
     return RES.rows.length > 0;
   } catch (err) {
@@ -1051,7 +1083,8 @@ async function getUserEmailWithTelegramID(telegramId) {
   try {
     const RES = await pool.query(
       `SELECT email FROM subscribers
-        WHERE telegram = '${telegramId}'`,
+        WHERE telegram = $1`,
+      [telegramId]
     );
     return RES.rows[0].email;
   } catch (err) {
@@ -1061,9 +1094,18 @@ async function getUserEmailWithTelegramID(telegramId) {
 
 async function getUserInfoByEmail(email, fields) {
   try {
+    // Validate fields to prevent SQL injection
+    const allowedFields = ['id', 'name', 'surname', 'email', 'notifications', 'telegram', 'gender', 'tags', 'notification_preferences', 'include_similar_tags', 'notification_day_before', 'notification_time', 'unsub_token', 'temp_dash_orario'];
+    const validFields = fields.filter(field => allowedFields.includes(field));
+    
+    if (validFields.length === 0) {
+      throw new Error('No valid fields specified');
+    }
+    
     const RES = await pool.query(
-      `SELECT ${fields.join(", ")} FROM subscribers
-        WHERE email = '${email}'`,
+      `SELECT ${validFields.join(", ")} FROM subscribers
+        WHERE email = $1`,
+      [email]
     );
     return RES.rows[0];
   } catch (err) {
@@ -1075,7 +1117,8 @@ async function getNumberNotification(email){
   try{
     const RES = await pool.query(
       `SELECT notifications FROM subscribers
-        WHERE email = '${email}'`,
+        WHERE email = $1`,
+      [email]
     );
     return RES.rows[0].notifications;
   } catch (err) {
@@ -1088,7 +1131,8 @@ async function incrementNumberNotification(telegramId){
     const RES = await pool.query(
       `UPDATE subscribers
          SET notifications = notifications + 1
-       WHERE telegram = '${telegramId}' AND notifications = -1;`
+       WHERE telegram = $1 AND notifications = -1`,
+      [telegramId]
     );
     console.log("SUCCESS CONFIRMATION TG ID: " + telegramId);
     return RES;
@@ -1144,7 +1188,8 @@ async function getUserKeywordsByEmail(user_email){
   try {
     const RES = await pool.query(
       `SELECT tags FROM subscribers
-        WHERE email = '${user_email}'`,
+        WHERE email = $1`,
+      [user_email]
     );
     return RES.rows[0].tags;
   } catch (err) {
